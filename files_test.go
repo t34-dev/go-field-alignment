@@ -5,11 +5,13 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 	"testing"
 )
 
+// TestGoPadding is the main test function that runs all subtests for the gopad program.
 func TestGoPadding(t *testing.T) {
 	// Setup: Create a temporary directory for test files
 	tempDir, err := os.MkdirTemp("", "gopad-test")
@@ -39,6 +41,7 @@ func TestGoPadding(t *testing.T) {
 	t.Run("AccessRights", func(t *testing.T) { testAccessRights(t, tempDir) })
 }
 
+// createTestFiles creates a set of test files in the specified directory.
 func createTestFiles(t *testing.T, dir string) {
 	files := []string{"main.go", "utils.go", "test.go", "ignore_me.go"}
 	for _, file := range files {
@@ -59,14 +62,16 @@ func createTestFiles(t *testing.T, dir string) {
 	}
 }
 
+// runCommand executes the gopad program with the given arguments and returns the output.
 func runCommand(args ...string) (string, error) {
 	cmd := exec.Command("go", append([]string{"run", "."}, args...)...)
 	output, err := cmd.CombinedOutput()
 	return string(output), err
 }
 
+// testBasicUsage tests the basic usage of the gopad program.
 func testBasicUsage(t *testing.T, dir string) {
-	output, err := runCommand("--file", filepath.Join(dir, "main.go"))
+	output, err := runCommand("--files", filepath.Join(dir, "main.go"))
 	if err != nil {
 		t.Errorf("Basic usage failed: %v", err)
 	}
@@ -83,8 +88,9 @@ func testBasicUsage(t *testing.T, dir string) {
 	}
 }
 
+// testIgnoreFiles tests the file ignoring functionality of gopad.
 func testIgnoreFiles(t *testing.T, dir string) {
-	output, err := runCommand("--file", dir, "--ignore", filepath.Join(dir, "test.go")+","+filepath.Join(dir, "ignore_me.go"))
+	output, err := runCommand("--files", dir, "--ignore", filepath.Join(dir, "test.go")+","+filepath.Join(dir, "ignore_me.go"))
 	if err != nil {
 		t.Errorf("Ignore files failed: %v", err)
 	}
@@ -101,8 +107,9 @@ func testIgnoreFiles(t *testing.T, dir string) {
 	}
 }
 
+// testViewFiles tests the file viewing functionality of gopad.
 func testViewFiles(t *testing.T, dir string) {
-	output, err := runCommand("--file", dir, "--view")
+	output, err := runCommand("--files", dir, "--view")
 	if err != nil {
 		t.Errorf("View files failed: %v", err)
 	}
@@ -119,8 +126,9 @@ func testViewFiles(t *testing.T, dir string) {
 	}
 }
 
+// testApplyFixes tests the fix applying functionality of gopad.
 func testApplyFixes(t *testing.T, dir string) {
-	output, err := runCommand("--file", filepath.Join(dir, "main.go"), "--fix")
+	output, err := runCommand("--files", filepath.Join(dir, "main.go"), "--fix")
 	if err != nil {
 		t.Errorf("Apply fixes failed: %v", err)
 	}
@@ -129,8 +137,9 @@ func testApplyFixes(t *testing.T, dir string) {
 	}
 }
 
+// testFilePatterns tests the file pattern matching functionality of gopad.
 func testFilePatterns(t *testing.T, dir string) {
-	output, err := runCommand("--file", dir, "--pattern", "\\.go$")
+	output, err := runCommand("--files", dir, "--pattern", "\\.go$")
 	if err != nil {
 		t.Errorf("File patterns failed: %v", err)
 	}
@@ -138,7 +147,7 @@ func testFilePatterns(t *testing.T, dir string) {
 		t.Errorf("Unexpected output for file patterns: %s", output)
 	}
 
-	output, err = runCommand("--file", dir, "--ignore-pattern", "test\\.go$")
+	output, err = runCommand("--files", dir, "--ignore-pattern", "test\\.go$")
 	if err != nil {
 		t.Errorf("Ignore patterns failed: %v", err)
 	}
@@ -147,6 +156,7 @@ func testFilePatterns(t *testing.T, dir string) {
 	}
 }
 
+// testErrorHandling tests various error scenarios in gopad.
 func testErrorHandling(t *testing.T, dir string) {
 	output, err := runCommand()
 	if err != nil {
@@ -156,7 +166,7 @@ func testErrorHandling(t *testing.T, dir string) {
 		t.Errorf("Expected usage information, got: %s", output)
 	}
 
-	output, err = runCommand("--file", "non_existent_folder")
+	output, err = runCommand("--files", "non_existent_folder")
 	if err == nil {
 		t.Errorf("Expected error for non-existent folder, got none. Output: %s", output)
 	}
@@ -164,7 +174,7 @@ func testErrorHandling(t *testing.T, dir string) {
 		t.Errorf("Expected 'path does not exist' error, got: %s", output)
 	}
 
-	output, err = runCommand("--file", dir, "--pattern", "[")
+	output, err = runCommand("--files", dir, "--pattern", "[")
 	if err == nil {
 		t.Errorf("Expected error for invalid regex, got none. Output: %s", output)
 	}
@@ -177,6 +187,7 @@ func testErrorHandling(t *testing.T, dir string) {
 	}
 }
 
+// testUtilityFunctions tests utility functions like version and help in gopad.
 func testUtilityFunctions(t *testing.T) {
 	output, err := runCommand("--version")
 	if err != nil {
@@ -195,8 +206,9 @@ func testUtilityFunctions(t *testing.T) {
 	}
 }
 
+// testFlagCombinations tests various combinations of flags in gopad.
 func testFlagCombinations(t *testing.T, dir string) {
-	output, err := runCommand("--file", dir, "--ignore", filepath.Join(dir, "test.go"), "--view", "--pattern", "\\.go$")
+	output, err := runCommand("--files", dir, "--ignore", filepath.Join(dir, "test.go"), "--view", "--pattern", "\\.go$")
 	if err != nil {
 		t.Errorf("Flag combinations failed: %v", err)
 	}
@@ -205,6 +217,7 @@ func testFlagCombinations(t *testing.T, dir string) {
 	}
 }
 
+// testPathsWithSpaces tests gopad's behavior with paths containing spaces.
 func testPathsWithSpaces(t *testing.T, dir string) {
 	spaceDir := filepath.Join(dir, "folder with spaces")
 	err := os.Mkdir(spaceDir, 0755)
@@ -216,7 +229,7 @@ func testPathsWithSpaces(t *testing.T, dir string) {
 		t.Fatalf("Failed to create test file in directory with spaces: %v", err)
 	}
 
-	output, err := runCommand("--file", spaceDir)
+	output, err := runCommand("--files", spaceDir)
 	if err != nil {
 		t.Errorf("Paths with spaces failed: %v", err)
 	}
@@ -225,8 +238,9 @@ func testPathsWithSpaces(t *testing.T, dir string) {
 	}
 }
 
+// testRecursiveTraversal tests gopad's recursive directory traversal.
 func testRecursiveTraversal(t *testing.T, dir string) {
-	output, err := runCommand("--file", dir, "--pattern", "\\.go$")
+	output, err := runCommand("--files", dir, "--pattern", "\\.go$")
 	if err != nil {
 		t.Errorf("Recursive traversal failed: %v", err)
 	}
@@ -235,6 +249,7 @@ func testRecursiveTraversal(t *testing.T, dir string) {
 	}
 }
 
+// testSymbolicLinks tests gopad's handling of symbolic links.
 func testSymbolicLinks(t *testing.T, dir string) {
 	linkFile := filepath.Join(dir, "link_file.go")
 	err := os.Symlink(filepath.Join(dir, "main.go"), linkFile)
@@ -242,7 +257,7 @@ func testSymbolicLinks(t *testing.T, dir string) {
 		t.Fatalf("Failed to create symbolic link: %v", err)
 	}
 
-	output, err := runCommand("--file", linkFile)
+	output, err := runCommand("--files", linkFile)
 	if err != nil {
 		t.Errorf("Symbolic links failed: %v", err)
 	}
@@ -251,6 +266,7 @@ func testSymbolicLinks(t *testing.T, dir string) {
 	}
 }
 
+// testAccessRights tests gopad's behavior with files having different access rights.
 func testAccessRights(t *testing.T, dir string) {
 	noAccessFile := filepath.Join(dir, "no_access.go")
 	err := os.WriteFile(noAccessFile, []byte("package noaccess"), 0644)
@@ -267,7 +283,7 @@ func testAccessRights(t *testing.T, dir string) {
 		}
 	}
 
-	output, err := runCommand("--file", dir)
+	output, err := runCommand("--files", dir)
 	if err != nil {
 		t.Errorf("Access rights test failed: %v", err)
 	}
@@ -288,6 +304,7 @@ func testAccessRights(t *testing.T, dir string) {
 	}
 }
 
+// countGoFiles counts the number of Go files in a directory.
 func countGoFiles(t *testing.T, dir string) int {
 	count := 0
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
@@ -305,6 +322,7 @@ func countGoFiles(t *testing.T, dir string) int {
 	return count
 }
 
+// extractFileCount extracts the number of files found from gopad's output.
 func extractFileCount(output string) int {
 	for _, line := range strings.Split(output, "\n") {
 		if strings.Contains(line, "Files found:") {
@@ -315,5 +333,101 @@ func extractFileCount(output string) int {
 			}
 		}
 	}
-	return -1 // Возвращаем -1, если не удалось извлечь количество файлов
+	return -1 // Return -1 if unable to extract the number of files
+}
+
+func TestMergeFlags(t *testing.T) {
+	tests := []struct {
+		name     string
+		long     string
+		short    string
+		expected []string
+	}{
+		{
+			name:     "Long flag present",
+			long:     "file1.go,file2.go",
+			short:    "short.go",
+			expected: []string{"file1.go", "file2.go"},
+		},
+		{
+			name:     "Only short flag present",
+			long:     "",
+			short:    "short1.go,short2.go",
+			expected: []string{"short1.go", "short2.go"},
+		},
+		{
+			name:     "Both flags empty",
+			long:     "",
+			short:    "",
+			expected: nil, // Changed from []string{} to nil
+		},
+		{
+			name:     "Long flag with spaces",
+			long:     " file1.go , file2.go ",
+			short:    "short.go",
+			expected: []string{"file1.go", "file2.go"},
+		},
+		{
+			name:     "Short flag with empty parts",
+			long:     "",
+			short:    "short1.go,,short2.go",
+			expected: []string{"short1.go", "short2.go"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := mergeFlags(tt.long, tt.short)
+			if !reflect.DeepEqual(result, tt.expected) {
+				t.Errorf("mergeFlags(%q, %q) = %v; want %v", tt.long, tt.short, result, tt.expected)
+			}
+		})
+	}
+}
+func TestSplitAndTrim(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected []string
+	}{
+		{
+			name:     "Simple split",
+			input:    "a,b,c",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "Split with spaces",
+			input:    " a , b , c ",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "Split with empty parts",
+			input:    "a,,b,c,",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "Single item",
+			input:    "a",
+			expected: []string{"a"},
+		},
+		{
+			name:     "Empty string",
+			input:    "",
+			expected: nil, // Changed from []string{} to nil
+		},
+		{
+			name:     "Only spaces and commas",
+			input:    " , , ",
+			expected: nil, // Changed from []string{} to nil
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := splitAndTrim(tt.input)
+			if !reflect.DeepEqual(result, tt.expected) {
+				t.Errorf("splitAndTrim(%q) = %v; want %v", tt.input, result, tt.expected)
+			}
+		})
+	}
 }

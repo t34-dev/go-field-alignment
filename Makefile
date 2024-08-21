@@ -9,6 +9,11 @@ include .make/get-started.mk
 include .make/tag.mk
 include .make/test.mk
 
+build:
+	@go build -o .bin/$(APP_NAME)$(APP_EXT) .
+
+example: build
+	@.bin/$(APP_NAME)${APP_EXT} --files "example" -v
 
 install:
 	@go build -o $(GOPATH)/bin/$(APP_NAME)$(APP_EXT)

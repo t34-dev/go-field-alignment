@@ -6,9 +6,15 @@ import (
 	"unsafe"
 )
 
+// getTypeID generates a unique identifier for an AST expression.
+// This is used to detect recursive types and prevent infinite loops.
 func getTypeID(expr ast.Expr) string {
 	return fmt.Sprintf("%T:%p", expr, expr)
 }
+
+// getFieldSizeWithMap calculates the size of a field in a structure.
+// It handles various types including basic types, pointers, arrays, structs, maps, channels, and interfaces.
+// The function uses a map to keep track of seen types to handle recursive structures.
 func getFieldSizeWithMap(field ast.Expr, seenTypes map[string]bool) uintptr {
 	typeID := getTypeID(field)
 
@@ -52,7 +58,7 @@ func getFieldSizeWithMap(field ast.Expr, seenTypes map[string]bool) uintptr {
 			if lit, ok := t.Len.(*ast.BasicLit); ok {
 				fmt.Sscanf(lit.Value, "%d", &length)
 			}
-			return elemSize * uintptr(length) // Delete padding
+			return elemSize * uintptr(length) // Remove padding
 		}
 	case *ast.StructType:
 		var size, maxAlign uintptr
@@ -75,6 +81,8 @@ func getFieldSizeWithMap(field ast.Expr, seenTypes map[string]bool) uintptr {
 	return unsafe.Sizeof("")
 }
 
+// getFieldAlign determines the alignment requirement of a field.
+// It handles various types similar to getFieldSizeWithMap.
 func getFieldAlign(field ast.Expr) uintptr {
 	switch t := (field).(type) {
 	case *ast.Ident:
@@ -117,10 +125,14 @@ func getFieldAlign(field ast.Expr) uintptr {
 	return unsafe.Alignof("")
 }
 
+// align calculates the next aligned address given a size and an alignment.
+// This function is used to ensure proper alignment of fields within a structure.
 func align(size, align uintptr) uintptr {
 	return (size + align - 1) &^ (align - 1)
 }
 
+// getFieldSize is a wrapper function that initializes a new map and calls getFieldSizeWithMap.
+// This function is the main entry point for calculating field sizes.
 func getFieldSize(field ast.Expr) uintptr {
 	return getFieldSizeWithMap(field, make(map[string]bool))
 }

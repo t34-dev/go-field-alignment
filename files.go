@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -9,6 +10,7 @@ import (
 	"strings"
 )
 
+// mergeFlags combines the long and short form flags, prioritizing the long form if present.
 func mergeFlags(long, short string) []string {
 	if long != "" {
 		return splitAndTrim(long)
@@ -16,6 +18,7 @@ func mergeFlags(long, short string) []string {
 	return splitAndTrim(short)
 }
 
+// splitAndTrim splits a string by commas and trims whitespace from each part.
 func splitAndTrim(s string) []string {
 	parts := strings.Split(s, ",")
 	var result []string
@@ -28,7 +31,8 @@ func splitAndTrim(s string) []string {
 	return result
 }
 
-func findFiles2(files []string, fileRegex, ignoreRegex *regexp.Regexp, ignoreFiles map[string]interface{}) (map[string]interface{}, error) {
+// findFiles searches for files matching the given regex patterns and ignoring specified files.
+func findFiles(files []string, fileRegex, ignoreRegex *regexp.Regexp, ignoreFiles map[string]interface{}) (map[string]interface{}, error) {
 	filesMap := make(map[string]interface{})
 
 	for _, file := range files {
@@ -43,6 +47,7 @@ func findFiles2(files []string, fileRegex, ignoreRegex *regexp.Regexp, ignoreFil
 	return filesMap, nil
 }
 
+// findMatchingFiles walks through the directory structure and finds files matching the given patterns.
 func findMatchingFiles(path string, fileRegex, ignoreRegex *regexp.Regexp, oldFiles, ignoreFiles map[string]interface{}) error {
 	return filepath.Walk(path, func(file string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -65,25 +70,20 @@ func findMatchingFiles(path string, fileRegex, ignoreRegex *regexp.Regexp, oldFi
 		return nil
 	})
 }
-func pathMapToArr(pathsMap map[string]interface{}) []string {
-	arr := make([]string, 0, 30)
-	for k, _ := range pathsMap {
-		arr = append(arr, k)
-	}
-	return arr
-}
+
+// printFiles prints the sorted list of files.
 func printFiles(files map[string]interface{}) {
 	if len(files) == 0 {
 		return
 	}
 
-	// Создаем слайс для хранения ключей (путей файлов)
+	// Create a slice to store the keys (file paths)
 	keys := make([]string, 0, len(files))
 	for file := range files {
 		keys = append(keys, file)
 	}
 
-	// Сортируем слайс
+	// Sort the slice
 	sort.Strings(keys)
 
 	fmt.Println("------------------------")
@@ -93,11 +93,12 @@ func printFiles(files map[string]interface{}) {
 	fmt.Println("------------------------")
 }
 
+// printUsage prints the usage information for the program.
 func printUsage() {
 	fmt.Println("Usage of gopad:")
-	fmt.Println("  gopad --file <files> [options]")
+	fmt.Println("  gopad --files <files> [options]")
 	fmt.Println("\nOptions:")
-	fmt.Println("  --file, -f            Comma-separated list of files or folders to process (required)")
+	fmt.Println("  --files, -f            Comma-separated list of files or folders to process (required)")
 	fmt.Println("  --ignore, -i          Comma-separated list of files or folders to ignore")
 	fmt.Println("  --view, -v            Print the absolute paths of found files")
 	fmt.Println("  --fix                 Make changes to the files")
@@ -106,22 +107,35 @@ func printUsage() {
 	fmt.Println("  --version             Print the version of the program")
 	fmt.Println("  --help                Print this help message")
 	fmt.Println("\nExamples:")
-	fmt.Println("  gopad --file folder1,folder2 --ignore folder/ignore")
+	fmt.Println("  gopad --files folder1,folder2 --ignore folder/ignore")
 	fmt.Println("  gopad -f \"folder1, folder2/\" -i \"folder/ignore, folder2/ignore\"")
-	fmt.Println("  gopad --file folder1 --pattern \"\\.(go|txt)$\" --view")
-	fmt.Println("  gopad --file \"example, example, example/ignore\" --pattern \"(_test\\.go$|^filename_)\" --ignore-pattern \"_ignore\\.go$\" --view")
-	fmt.Println("  gopad --file \"example, example/userx_test.go\" --ignore-pattern \"_test\\.go|ignore\\.go$\" -v")
-	fmt.Println("  gopad --file \"pkg\"")
-	fmt.Println("  gopad --file \"pkg\" --ignore-pattern \"_test\\.go$\"")
-	fmt.Println("  gopad --file \"pkg\" --pattern \"_test\\.go$\"")
-	fmt.Println("  gopad --file folder1 --fix")
+	fmt.Println("  gopad --files folder1 --pattern \"\\.(go|txt)$\" --view")
+	fmt.Println("  gopad --files \"example, example, example/ignore\" --pattern \"(_test\\.go$|^filename_)\" --ignore-pattern \"_ignore\\.go$\" --view")
+	fmt.Println("  gopad --files \"example, example/userx_test.go\" --ignore-pattern \"_test\\.go|ignore\\.go$\" -v")
+	fmt.Println("  gopad --files \"pkg\"")
+	fmt.Println("  gopad --files \"pkg\" --ignore-pattern \"_test\\.go$\"")
+	fmt.Println("  gopad --files \"pkg\" --pattern \"_test\\.go$\"")
+	fmt.Println("  gopad --files folder1 --fix")
 }
+
+// applyFixes applies fixes to the specified files.
 func applyFixes(files map[string]interface{}) {
 	fmt.Println("Applying fixes to files:")
-	for _, file := range files {
+	for file := range files {
 		fmt.Printf("Fixing file: %s\n", file)
-		// Здесь должна быть логика внесения изменений в файл
-		// Например:
+
+		// read files
+		openFile, err := os.ReadFile(file)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		results, err := ParseBytes(openFile)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		if false {
+			fmt.Println(results)
+		}
 		// applyFixToFile(file)
 	}
 }

@@ -3,6 +3,9 @@ package main
 import "go/ast"
 
 // ============= Creator Item
+
+// createItemInfoName extracts the name from the given AST node.
+// It handles TypeSpec and Field nodes, returning an empty string for unsupported types.
 func createItemInfoName(data interface{}) string {
 	switch elem := data.(type) {
 	case *ast.TypeSpec:
@@ -16,12 +19,18 @@ func createItemInfoName(data interface{}) string {
 	return ""
 }
 
+// createItemInfoPath generates a path string for an item.
+// It combines the item's name with its parent's name, if available.
 func createItemInfoPath(name, parentName string) string {
 	if parentName != "" {
 		return parentName + "/" + name
 	}
 	return name
 }
+
+// createItemInfo creates an ItemInfo structure from the given AST node.
+// It handles TypeSpec and Field nodes, processing their contents and creating nested structures as needed.
+// The function also updates the provided mapper with the created ItemInfo.
 func createItemInfo(data interface{}, parentData *ItemInfo, mapper map[string]*ItemInfo) *ItemInfo {
 	switch Elem := data.(type) {
 	case *ast.TypeSpec:

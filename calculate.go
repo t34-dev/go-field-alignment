@@ -1,6 +1,7 @@
 package main
 
-// ============= Calculate
+// calculateStructures calculates the size and alignment of structures in the given slice of ItemInfo.
+// It recursively processes nested structures and updates their size and alignment information.
 func calculateStructure(elem *ItemInfo, cache map[string]*ItemInfo) {
 	var currentOffset, maxAlign uintptr
 	for _, field := range elem.NestedFields {
@@ -46,6 +47,8 @@ func calculateStructure(elem *ItemInfo, cache map[string]*ItemInfo) {
 	elem.Align = maxAlign
 }
 
+// calculateStructure calculates the size and alignment of a single structure.
+// It updates the Size and Align fields of the ItemInfo and processes nested fields.
 func calculateStructures(structures []*ItemInfo) {
 	cache := make(map[string]*ItemInfo, len(structures))
 	for _, structure := range structures {

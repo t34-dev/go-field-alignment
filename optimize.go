@@ -6,8 +6,12 @@ import (
 )
 
 // ============= Optimization
+
+// optimizeStructure reorganizes the fields of a structure to minimize padding and optimize memory usage.
+// It sorts fields by alignment and size, separates regular fields from arrays and slices,
+// and recalculates field offsets for the optimized structure.
 func optimizeStructure(fields []*ItemInfo) []*ItemInfo {
-	// Сортируем поля по убыванию выравнивания, затем по убыванию размера
+	// Sort fields in descending order of alignment, then in descending order of size
 	sort.Slice(fields, func(i, j int) bool {
 		if fields[i].Align != fields[j].Align {
 			return fields[i].Align > fields[j].Align
@@ -15,7 +19,7 @@ func optimizeStructure(fields []*ItemInfo) []*ItemInfo {
 		return fields[i].Size > fields[j].Size
 	})
 
-	// Отдельно обрабатываем массивы и слайсы
+	// Separately process arrays and slices
 	var regularFields, arrayFields []*ItemInfo
 	for _, field := range fields {
 		if strings.HasPrefix(field.StringType, "[") || strings.HasPrefix(field.StringType, "[]") {
@@ -25,10 +29,10 @@ func optimizeStructure(fields []*ItemInfo) []*ItemInfo {
 		}
 	}
 
-	// Объединяем обратно, помещая массивы и слайсы в конец
+	// Merge back, placing arrays and slices at the end
 	optimizedFields := append(regularFields, arrayFields...)
 
-	// Пересчитываем смещения
+	// Recalculate offsets
 	var currentOffset uintptr
 	for i := range optimizedFields {
 		currentOffset = align(currentOffset, optimizedFields[i].Align)
@@ -38,6 +42,9 @@ func optimizeStructure(fields []*ItemInfo) []*ItemInfo {
 
 	return optimizedFields
 }
+
+// optimizeStructures applies the optimizeStructure function to all structures in the given map.
+// It processes structures in order of their nesting depth (determined by the number of slashes in their path).
 func optimizeStructures(mapStructures map[string]*ItemInfo) {
 	mapperItemsFlat := sortMapKeysBySlashCount(mapStructures)
 	for _, structure := range mapperItemsFlat {

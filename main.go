@@ -8,10 +8,12 @@ import (
 	"strings"
 )
 
-const version = "1.0.0"
-
+// defaultFilePattern is the default regex pattern for files to process
 const defaultFilePattern = `\.go$`
 
+// main is the entry point of the program.
+// It handles command-line arguments, processes files based on the provided flags,
+// and applies necessary operations on the found files.
 func main() {
 	command := ""
 	if len(os.Args) == 2 {
@@ -19,8 +21,8 @@ func main() {
 	}
 
 	// Define flags
-	fileFlag := flag.String("file", "", "Comma-separated list of files or folders to process")
-	fFlag := flag.String("f", "", "Short form of --file")
+	filesFlag := flag.String("files", "", "Comma-separated list of files or folders to process")
+	fFlag := flag.String("f", "", "Short form of --files")
 	ignoreFlag := flag.String("ignore", "", "Comma-separated list of files or folders to ignore")
 	iFlag := flag.String("i", "", "Short form of --ignore")
 	viewFlag := flag.Bool("view", false, "Print the absolute paths of found files")
@@ -41,13 +43,13 @@ func main() {
 	}
 
 	// Check for help flag or missing required flags
-	if *helpFlag || command == "help" || (*fileFlag == "" && *fFlag == "") {
+	if *helpFlag || command == "help" || (*filesFlag == "" && *fFlag == "") {
 		printUsage()
 		return
 	}
 
 	// Merge short and long form flags
-	files := mergeFlags(*fileFlag, *fFlag)
+	files := mergeFlags(*filesFlag, *fFlag)
 	ignores := mergeFlags(*ignoreFlag, *iFlag)
 	filePattern := *filePatternFlag
 	ignorePattern := *ignorePatternFlag
@@ -73,12 +75,12 @@ func main() {
 		}
 	}
 
-	ignoresMap, err := findFiles2(ignores, fileRegex, ignoreRegex, nil)
+	ignoresMap, err := findFiles(ignores, fileRegex, ignoreRegex, nil)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	filesToWork, err := findFiles2(files, fileRegex, ignoreRegex, ignoresMap)
+	filesToWork, err := findFiles(files, fileRegex, ignoreRegex, ignoresMap)
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)
@@ -94,8 +96,8 @@ func main() {
 		ViewMode = false
 	}
 
+	applyFixes(filesToWork)
 	// Apply fixes if fix flag is set
 	if *fixFlag {
-		applyFixes(filesToWork)
 	}
 }

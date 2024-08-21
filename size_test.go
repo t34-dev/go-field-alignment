@@ -8,6 +8,8 @@ import (
 	"unsafe"
 )
 
+// TestGetFieldSizeStruct tests the getFieldSize function with a simple struct.
+// It compares the calculated size with the actual size of an equivalent Go struct.
 func TestGetFieldSizeStruct(t *testing.T) {
 	structExpr := &ast.StructType{
 		Fields: &ast.FieldList{
@@ -22,7 +24,7 @@ func TestGetFieldSizeStruct(t *testing.T) {
 	var expr ast.Expr = structExpr
 	size := getFieldSize(expr)
 
-	// Создаем реальную структуру для сравнения
+	// Create a real structure for comparison
 	type testStruct struct {
 		i int
 		s string
@@ -30,27 +32,29 @@ func TestGetFieldSizeStruct(t *testing.T) {
 	}
 	expected := reflect.TypeOf(testStruct{}).Size()
 
-	// Выводим детальную информацию о размерах и выравнивании
-	t.Logf("Размер int: %d", unsafe.Sizeof(int(0)))
-	t.Logf("Размер string: %d", unsafe.Sizeof(""))
-	t.Logf("Размер bool: %d", unsafe.Sizeof(false))
-	t.Logf("Выравнивание структуры: %d", reflect.TypeOf(testStruct{}).Align())
+	// Output detailed information about sizes and alignment
+	t.Logf("Size of int: %d", unsafe.Sizeof(int(0)))
+	t.Logf("Size of string: %d", unsafe.Sizeof(""))
+	t.Logf("Size of bool: %d", unsafe.Sizeof(false))
+	t.Logf("Structure alignment: %d", reflect.TypeOf(testStruct{}).Align())
 
 	v := reflect.ValueOf(testStruct{})
 	for i := 0; i < v.NumField(); i++ {
 		field := v.Type().Field(i)
-		t.Logf("Поле %s: размер %d, смещение %d, выравнивание %d",
+		t.Logf("Field %s: size %d, offset %d, alignment %d",
 			field.Name, field.Type.Size(), field.Offset, field.Type.Align())
 	}
 
-	t.Logf("Ожидаемый размер: %d", expected)
-	t.Logf("Фактический размер: %d", size)
+	t.Logf("Expected size: %d", expected)
+	t.Logf("Actual size: %d", size)
 
 	if size != expected {
 		t.Errorf("getFieldSize() for struct = %v, want %v", size, expected)
 	}
 }
 
+// TestGetFieldSizeTypes tests the getFieldSize function for various basic types.
+// It checks if the calculated sizes match the actual sizes of Go types.
 func TestGetFieldSizeTypes(t *testing.T) {
 	tests := []struct {
 		name string
@@ -90,6 +94,8 @@ func TestGetFieldSizeTypes(t *testing.T) {
 	}
 }
 
+// TestGetFieldSizePointers tests the getFieldSize function for pointer types.
+// It verifies that the function correctly calculates sizes for single and double pointers.
 func TestGetFieldSizePointers(t *testing.T) {
 	tests := []struct {
 		name string
@@ -111,6 +117,8 @@ func TestGetFieldSizePointers(t *testing.T) {
 	}
 }
 
+// TestGetFieldSizeComplexStructs tests the getFieldSize function for more complex struct types.
+// It includes tests for structs with embedded structs, slices, and maps.
 func TestGetFieldSizeComplexStructs(t *testing.T) {
 	tests := []struct {
 		name string
@@ -168,14 +176,16 @@ func TestGetFieldSizeComplexStructs(t *testing.T) {
 	}
 }
 
+// TestGetFieldSizeRecursiveStruct tests the getFieldSize function with a recursive struct.
+// It verifies that the function can handle recursive types without infinite loops.
 func TestGetFieldSizeRecursiveStruct(t *testing.T) {
-	// Определяем рекурсивную структуру
+	// Define a recursive structure
 	type RecursiveStruct struct {
 		i int
 		r *RecursiveStruct
 	}
 
-	// Создаем AST представление структуры RecursiveStruct
+	// Create AST representation of RecursiveStruct
 	recursiveStructExpr := &ast.StructType{
 		Fields: &ast.FieldList{
 			List: []*ast.Field{
@@ -193,31 +203,31 @@ func TestGetFieldSizeRecursiveStruct(t *testing.T) {
 		},
 	}
 
-	// Создаем полное AST представление определения типа
+	// Create full AST representation of the type definition
 	typeSpec := &ast.TypeSpec{
 		Name: &ast.Ident{Name: "RecursiveStruct"},
 		Type: recursiveStructExpr,
 	}
 
-	// Оборачиваем определение типа в GenDecl, как это было бы в реальном Go файле
+	// Wrap the type definition in GenDecl, as it would be in a real Go file
 	genDecl := &ast.GenDecl{
 		Tok:   token.TYPE,
 		Specs: []ast.Spec{typeSpec},
 	}
 
-	// Теперь у нас есть полное AST представление определения типа RecursiveStruct
+	// Now we have a complete AST representation of the RecursiveStruct type definition
 
 	var expr ast.Expr = recursiveStructExpr
 	size := getFieldSize(expr)
 
 	expected := reflect.TypeOf(RecursiveStruct{}).Size()
 
-	t.Logf("AST представление структуры:")
+	t.Logf("AST representation of the structure:")
 	t.Logf("%#v", genDecl)
-	t.Logf("Размер int: %d", unsafe.Sizeof(int(0)))
-	t.Logf("Размер указателя: %d", unsafe.Sizeof(uintptr(0)))
-	t.Logf("Ожидаемый размер: %d", expected)
-	t.Logf("Фактический размер: %d", size)
+	t.Logf("Size of int: %d", unsafe.Sizeof(int(0)))
+	t.Logf("Size of pointer: %d", unsafe.Sizeof(uintptr(0)))
+	t.Logf("Expected size: %d", expected)
+	t.Logf("Actual size: %d", size)
 
 	if size != expected {
 		t.Errorf("getFieldSize() for recursive struct = %v, want %v", size, expected)

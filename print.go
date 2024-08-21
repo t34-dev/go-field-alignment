@@ -6,14 +6,21 @@ import (
 )
 
 // ============= Print
+
+// viewPrintStructures iterates through a slice of ItemInfo structures and prints each one.
+// It calls testPrintStructure for each element and adds a separator line between structures.
 func viewPrintStructures(structures []*ItemInfo) {
 	for _, elem := range structures {
 		testPrintStructure(elem, 0)
-		fmt.Printf("-------------------------------------------")
+		fmt.Println("-------------------------------------------")
 	}
 }
+
+// testPrintStructure recursively prints the structure of an ItemInfo element.
+// It formats the output to show field names, types, sizes, alignments, and offsets.
+// The function also calculates and displays padding between fields.
 func testPrintStructure(elem *ItemInfo, tab int) {
-	// выравнивание для красивого отображения в логах
+	// alignment for beautiful display in logs
 	maxFieldNameLength := 0
 	maxTypeLength := 0
 

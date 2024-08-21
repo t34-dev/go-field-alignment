@@ -9,24 +9,12 @@ import (
 	"go/token"
 )
 
+// ViewMode is a global flag to control the output verbosity
 var (
 	ViewMode = false
 )
 
-type BadStruct struct {
-	a bool  // 1 byte
-	b int32 // 4 bytes
-	c bool  // 1 byte
-	d int64 // 8 bytes
-}
-
-type GoodStruct struct {
-	d int64 // 8 bytes
-	b int32 // 4 bytes
-	a bool  // 1 byte
-	c bool  // 1 byte
-}
-
+// ItemInfo represents detailed information about a struct field or type
 type ItemInfo struct {
 	Name         string
 	Path         string
@@ -41,35 +29,54 @@ type ItemInfo struct {
 	NestedFields []*ItemInfo
 }
 
+// Result represents the outcome of struct optimization
 type Result struct {
 	NameStructure string
-	beforeSize    int
-	AfterSize     int
+	BeforeSize    uintptr
+	AfterSize     uintptr
 	Data          []byte
 	StartPos      int
 	EndPos        int
 }
 
+// ParseFile parses a Go file and returns optimization results
 func ParseFile(path string) ([]Result, error) {
 	return parse(path, nil)
 }
+
+// ParseBytes parses Go code from a byte slice and returns optimization results
 func ParseBytes(bytes []byte) ([]Result, error) {
 	return parse("", bytes)
 }
+
+// ParseStrings parses Go code from a string and returns optimization results
 func ParseStrings(str string) ([]Result, error) {
 	return parse("", []byte(str))
 }
+
+// parse is the core function that handles parsing and optimization of Go code
 func parse(path string, bytes []byte) ([]Result, error) {
 	node, err := parser.ParseFile(token.NewFileSet(), path, bytes, parser.ParseComments)
 	if err != nil {
-		errors.New(fmt.Sprintf("Failed to parse source: %v", err))
+		return nil, errors.New(fmt.Sprintf("Failed to parse source: %v", err))
 	}
 
+	var results []Result
 	var structures []*ItemInfo
 	mapperItems := map[string]*ItemInfo{}
 
 	ast.Inspect(node, func(n ast.Node) bool {
 		if typeSpec, ok := n.(*ast.TypeSpec); ok {
+			startPos := int(typeSpec.Pos()) - len("type ")
+			plus := 0
+			if typeSpec.Comment != nil && len(typeSpec.Comment.List) > 0 {
+				plus += len(typeSpec.Comment.List[0].Text) + 1
+			}
+			endPos := int(typeSpec.Type.End()) + plus
+			results = append(results, Result{
+				StartPos: startPos,
+				EndPos:   endPos,
+			})
 			item := createItemInfo(typeSpec, nil, mapperItems)
 			if item != nil {
 				structures = append(structures, item)
@@ -78,6 +85,9 @@ func parse(path string, bytes []byte) ([]Result, error) {
 		return true
 	})
 	calculateStructures(structures)
+	for idx, structure := range structures {
+		results[idx].BeforeSize = structure.Size
+	}
 	if ViewMode {
 		viewPrintStructures(structures)
 	}
@@ -85,31 +95,32 @@ func parse(path string, bytes []byte) ([]Result, error) {
 	// Optimize structures
 	optimizeStructures(mapperItems)
 	calculateStructures(structures)
+	for idx, structure := range structures {
+		results[idx].AfterSize = structure.Size
+	}
 	if ViewMode {
 		viewPrintStructures(structures)
 	}
 
-	var results []Result
-	for _, structure := range structures {
+	// add data
+	for idx, structure := range structures {
 		code, err := formatGoCode(renderStructure(structure))
 		if err != nil {
 			return nil, err
 		}
-		results = append(results, Result{
-			beforeSize:    1,
-			AfterSize:     2,
-			NameStructure: structure.Name,
-			Data:          []byte(code),
-		})
+		results[idx].NameStructure = structure.Name
+		results[idx].Data = []byte(code)
 	}
 	return results, nil
 }
+
+// Replacer replaces the original struct definitions with optimized versions in the source code
 func Replacer(file []byte, results []Result) ([]byte, error) {
 	var blocks []textreplacer.Block
 	for _, elem := range results {
 		blocks = append(blocks, textreplacer.Block{
-			Start: elem.StartPos,
-			End:   elem.EndPos,
+			Start: elem.StartPos - 1,
+			End:   elem.EndPos - 1,
 			Txt:   elem.Data,
 		})
 	}
