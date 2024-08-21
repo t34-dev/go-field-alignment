@@ -1,8 +1,8 @@
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
-[![Coverage Status](https://coveralls.io/repos/github/t34-dev/gopad/badge.svg?branch=main&ver=1723825072)](https://coveralls.io/github/t34-dev/gopad?branch=main&ver=1723825072)
+[![Coverage Status](https://coveralls.io/repos/github/t34-dev/go-pad/badge.svg?branch=main&ver=1723825072)](https://coveralls.io/github/t34-dev/go-pad?branch=main&ver=1723825072)
 ![Go Version](https://img.shields.io/badge/Go-1.22-blue?logo=go&ver=1723825072)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/t34-dev/gopad?ver=1723825072)
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/t34-dev/gopad?sort=semver&style=flat&logo=git&logoColor=white&label=Latest%20Version&color=blue&ver=1723825072)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/t34-dev/go-pad?ver=1723825072)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/t34-dev/go-pad?sort=semver&style=flat&logo=git&logoColor=white&label=Latest%20Version&color=blue&ver=1723825072)
 
 # GoPad
 
@@ -25,7 +25,7 @@ Gopad is a powerful tool designed for Golang developers to enhance code readabil
 To install `gopad`, make sure you have Go installed on your system, then run:
 
 ```shell
-go install github.com/t34-dev/gopad
+go install github.com/t34-dev/go-pad
 ```
 
 For local installation
