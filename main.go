@@ -88,7 +88,10 @@ func main() {
 
 	// Print results if view flag is set
 	if *viewFlag || *vFlag {
+		ViewMode = true
 		printFiles(filesToWork)
+	} else {
+		ViewMode = false
 	}
 
 	// Apply fixes if fix flag is set

@@ -1,11 +1,6 @@
 package main
 
 import (
-	"fmt"
-	textreplacer "github.com/t34-dev/go-text-replacer"
-	"go/ast"
-	"go/parser"
-	"go/token"
 	"strings"
 	"testing"
 )
@@ -106,63 +101,20 @@ type MixStruct struct {
 
 // TestStructAlignment tests the alignment and optimization of struct fields
 func TestStructAlignment(t *testing.T) {
-	fset := token.NewFileSet()
-
-	// Parse the source code from the string
-	node, err := parser.ParseFile(fset, "", structsSourceIn, parser.ParseComments)
+	ViewMode = true
+	results, err := ParseStrings(structsSourceIn)
 	if err != nil {
-		t.Fatalf("Failed to parse source: %v", err)
+		t.Fatal(err)
 	}
-
-	var items []*ItemInfo
-	mapperItems := map[string]*ItemInfo{}
-
-	ast.Inspect(node, func(n ast.Node) bool {
-		if typeSpec, ok := n.(*ast.TypeSpec); ok {
-			item := createItemInfo(typeSpec, nil, mapperItems)
-			if item != nil {
-				items = append(items, item)
-			}
-		}
-		return true
-	})
-	calculateStructures(items)
-	testPrintStructures(t, items)
-
-	// Optimize structures
-	optimizeStructures(mapperItems)
-	calculateStructures(items)
-	testPrintStructures(t, items)
-
-	fmt.Println("===============")
-
-	for _, structure := range items {
-		data := renderStructure(structure)
-		code, err := formatGoCode(data)
-		if err != nil {
-			fmt.Println("ERROR")
-		}
-		fmt.Println("=============== " + structure.Name)
-		fmt.Println(code)
-		fmt.Println("=============== END: " + structure.Name)
-	}
-	fmt.Println("items", items, mapperItems)
 
 	// Replace content
-	var blocks []textreplacer.Block
-	for _, elem := range items {
-		blocks = append(blocks, textreplacer.Block{
-			Start: 1,
-			End:   2,
-			Txt:   []byte(elem.Name),
-		})
+	result, err := Replacer([]byte(structsSourceIn), results)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	replacer := textreplacer.New([]byte(structsSourceIn))
-	result, err := replacer.Enter(blocks)
-
-	modifiedCode := string(result)
 	// Compare modified code with structsSourceOut
+	modifiedCode := string(result)
 	expectedCode := strings.TrimSpace(structsSourceOut)
 	if strings.TrimSpace(modifiedCode) != expectedCode {
 		t.Errorf("Modified code does not match expected output.\nGot:\n%s\nWant:\n%s", modifiedCode, expectedCode)
