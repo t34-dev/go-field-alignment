@@ -94,8 +94,8 @@ func printFiles(files map[string]interface{}) {
 }
 
 func printUsage() {
-	fmt.Println("Usage of go-padding:")
-	fmt.Println("  go-padding --file <files> [options]")
+	fmt.Println("Usage of gopad:")
+	fmt.Println("  gopad --file <files> [options]")
 	fmt.Println("\nOptions:")
 	fmt.Println("  --file, -f            Comma-separated list of files or folders to process (required)")
 	fmt.Println("  --ignore, -i          Comma-separated list of files or folders to ignore")
@@ -106,15 +106,15 @@ func printUsage() {
 	fmt.Println("  --version             Print the version of the program")
 	fmt.Println("  --help                Print this help message")
 	fmt.Println("\nExamples:")
-	fmt.Println("  go-padding --file folder1,folder2 --ignore folder/ignore")
-	fmt.Println("  go-padding -f \"folder1, folder2/\" -i \"folder/ignore, folder2/ignore\"")
-	fmt.Println("  go-padding --file folder1 --pattern \"\\.(go|txt)$\" --view")
-	fmt.Println("  go-padding --file \"example, example, example/ignore\" --pattern \"(_test\\.go$|^filename_)\" --ignore-pattern \"_ignore\\.go$\" --view")
-	fmt.Println("  go-padding --file \"example, example/userx_test.go\" --ignore-pattern \"_test\\.go|ignore\\.go$\" -v")
-	fmt.Println("  go-padding --file \"pkg\"")
-	fmt.Println("  go-padding --file \"pkg\" --ignore-pattern \"_test\\.go$\"")
-	fmt.Println("  go-padding --file \"pkg\" --pattern \"_test\\.go$\"")
-	fmt.Println("  go-padding --file folder1 --fix")
+	fmt.Println("  gopad --file folder1,folder2 --ignore folder/ignore")
+	fmt.Println("  gopad -f \"folder1, folder2/\" -i \"folder/ignore, folder2/ignore\"")
+	fmt.Println("  gopad --file folder1 --pattern \"\\.(go|txt)$\" --view")
+	fmt.Println("  gopad --file \"example, example, example/ignore\" --pattern \"(_test\\.go$|^filename_)\" --ignore-pattern \"_ignore\\.go$\" --view")
+	fmt.Println("  gopad --file \"example, example/userx_test.go\" --ignore-pattern \"_test\\.go|ignore\\.go$\" -v")
+	fmt.Println("  gopad --file \"pkg\"")
+	fmt.Println("  gopad --file \"pkg\" --ignore-pattern \"_test\\.go$\"")
+	fmt.Println("  gopad --file \"pkg\" --pattern \"_test\\.go$\"")
+	fmt.Println("  gopad --file folder1 --fix")
 }
 func applyFixes(files map[string]interface{}) {
 	fmt.Println("Applying fixes to files:")

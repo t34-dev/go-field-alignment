@@ -1,4 +1,4 @@
-module github.com/t34-dev/go-padding
+module github.com/t34-dev/gopad
 
 go 1.22.4
 

@@ -1,30 +1,48 @@
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
-[![Coverage Status](https://img.shields.io/coveralls/davecgh/go-spew.svg)](https://coveralls.io/r/davecgh/go-spew?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/t34-dev/gopad/badge.svg?branch=main&ver=1723825072)](https://coveralls.io/github/t34-dev/gopad?branch=main&ver=1723825072)
+![Go Version](https://img.shields.io/badge/Go-1.22-blue?logo=go&ver=1723825072)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/t34-dev/gopad?ver=1723825072)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/t34-dev/gopad?sort=semver&style=flat&logo=git&logoColor=white&label=Latest%20Version&color=blue&ver=1723825072)
 
-# go-padding
+# GoPad
 
-`go-padding` is a Go tool that analyzes and optimizes struct field alignment in Go source files. It helps developers identify and fix inefficient memory layouts in structs, potentially reducing memory usage and improving performance.
+Gopad is a powerful tool designed for Golang developers to enhance code readability by performing multi-level field alignment in struct declarations while preserving original metadata.
 
 ## Features
 
 - Analyzes struct field alignment and padding in Go source files
 - Calculates the size and alignment of each struct and its fields
 - Optimizes struct layout by reordering fields for better memory efficiency
-- Supports processing single files or entire directories
-- Provides an option to automatically apply optimizations to source files
+- Performs multi-level struct field alignment for improved readability
+- Preserves original comments and metadata
+- Supports nested structs and complex type hierarchies
+- Processes single files or entire directories
+- Offers an option to automatically apply optimizations to source files
+- Easily integrates with existing Go projects
 
 ## Installation
 
-To install `go-padding`, make sure you have Go installed on your system, then run:
+To install `gopad`, make sure you have Go installed on your system, then run:
 
+```shell
+go install github.com/t34-dev/gopad
 ```
-go get -u github.com/t34-dev/go-padding
+
+For local installation
+
+```shell
+################ Bash
+go build -o $GOPATH/bin/gopad       # unix
+go build -o $GOPATH/bin/gopad.exe   # window
+
+################ Makefile
+make install                          # any system
 ```
 
 ## Usage
 
 ```
-go-padding [options] <file or directory paths>
+gopad [options] <file or directory paths>
 ```
 
 ### Options
@@ -36,22 +54,22 @@ go-padding [options] <file or directory paths>
 
 Analyze a single file:
 ```
-go-padding main.go
+gopad main.go
 ```
 
 Optimize structs in all Go files in the current directory:
 ```
-go-padding -fix .
+gopad -fix .
 ```
 
 Analyze all Go files in a specific directory:
 ```
-go-padding /path/to/project
+gopad /path/to/project
 ```
 
 ## Output
 
-For each struct found in the processed files, `go-padding` will output:
+For each struct found in the processed files, `gopad` will output:
 
 - Struct name
 - Total size of the struct
@@ -65,10 +83,15 @@ For each struct found in the processed files, `go-padding` will output:
 
 If the `-fix` option is used, it will also show the optimized layout of the struct.
 
+## License
+
+This project is licensed under the ISC License. See the [LICENSE](LICENSE) file for details.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+---
+
+Developed with ❤️ by [T34](https://github.com/t34-dev)

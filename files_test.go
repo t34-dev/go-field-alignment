@@ -12,7 +12,7 @@ import (
 
 func TestGoPadding(t *testing.T) {
 	// Setup: Create a temporary directory for test files
-	tempDir, err := os.MkdirTemp("", "go-padding-test")
+	tempDir, err := os.MkdirTemp("", "gopad-test")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -152,7 +152,7 @@ func testErrorHandling(t *testing.T, dir string) {
 	if err != nil {
 		t.Errorf("Unexpected error when running without arguments: %v", err)
 	}
-	if !strings.Contains(output, "Usage of go-padding:") {
+	if !strings.Contains(output, "Usage of gopad:") {
 		t.Errorf("Expected usage information, got: %s", output)
 	}
 
@@ -190,7 +190,7 @@ func testUtilityFunctions(t *testing.T) {
 	if err != nil {
 		t.Errorf("Help check failed: %v", err)
 	}
-	if !strings.Contains(output, "Usage of go-padding:") {
+	if !strings.Contains(output, "Usage of gopad:") {
 		t.Errorf("Unexpected output for help check: %s", output)
 	}
 }
