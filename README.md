@@ -1,8 +1,8 @@
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
-[![Coverage Status](https://coveralls.io/repos/github/t34-dev/go-pad-alignment/badge.svg?branch=main&ver=1724705312)](https://coveralls.io/github/t34-dev/go-pad-alignment?branch=main&ver=1724705312)
-![Go Version](https://img.shields.io/badge/Go-1.22-blue?logo=go&ver=1724705312)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/t34-dev/go-pad-alignment?ver=1724705312)
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/t34-dev/go-pad-alignment?sort=semver&style=flat&logo=git&logoColor=white&label=Latest%20Version&color=blue&ver=1724705312)
+[![Coverage Status](https://coveralls.io/repos/github/t34-dev/go-pad-alignment/badge.svg?branch=main&ver=1724705426)](https://coveralls.io/github/t34-dev/go-pad-alignment?branch=main&ver=1724705426)
+![Go Version](https://img.shields.io/badge/Go-1.22-blue?logo=go&ver=1724705426)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/t34-dev/go-pad-alignment?ver=1724705426)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/t34-dev/go-pad-alignment?sort=semver&style=flat&logo=git&logoColor=white&label=Latest%20Version&color=blue&ver=1724705426)
 
 
 # Go-Pad
