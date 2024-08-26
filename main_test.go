@@ -16,8 +16,6 @@ const testOutFile = "tests/out/file.go"
 // It reads input and expected output files, applies the optimization,
 // and compares the result with the expected output.
 func TestStructAlignment(t *testing.T) {
-	ViewMode = true
-
 	// read files
 	enterFIle, err := os.ReadFile(testEnterFile)
 	if err != nil {
@@ -40,7 +38,7 @@ func TestStructAlignment(t *testing.T) {
 	calculateStructures(structures, false)
 	debugPrintStructures(structures)
 
-	err = renderTextStructures(structures)
+	err = renderStructures(structures)
 	if err != nil {
 		t.Fatal(err)
 	}

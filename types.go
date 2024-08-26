@@ -9,16 +9,11 @@ import (
 	"go/token"
 )
 
-// ViewMode is a global flag to control the output verbosity
-var (
-	ViewMode = false
-)
-
 // MetaData represents the outcome of struct optimization
 type MetaData struct {
 	BeforeSize uintptr
 	AfterSize  uintptr
-	Data       []byte
+	Text       []byte
 	StartPos   int
 	EndPos     int
 }
@@ -88,39 +83,6 @@ func parseData(path string, bytes []byte) ([]*Structure, map[string]*Structure, 
 	return structures, mapperItems, err
 }
 
-// parseData is the core function that handles parsing and optimization of Go code
-//func parseData(path string, bytes []byte) ([]MetaData, error) {
-//
-//	calculateStructures(structures)
-//	for idx, structure := range structures {
-//		results[idx].BeforeSize = structure.Size
-//	}
-//	if ViewMode {
-//		debugPrintStructures(structures)
-//	}
-//
-//	// Optimize structures
-//	optimizeMapperStructures(mapperItems)
-//	calculateStructures(structures)
-//	for idx, structure := range structures {
-//		results[idx].AfterSize = structure.Size
-//	}
-//	if ViewMode {
-//		debugPrintStructures(structures)
-//	}
-//
-//	// add data
-//	for idx, structure := range structures {
-//		code, err := formatGoCode(renderStructure(structure))
-//		if err != nil {
-//			return nil, err
-//		}
-//		results[idx].NameStructure = structure.Name
-//		results[idx].Data = []byte(code)
-//	}
-//	return results, nil
-//}
-
 // Replacer replaces the original struct definitions with optimized versions in the source code
 func Replacer(file []byte, structures []*Structure) ([]byte, error) {
 	var blocks []textreplacer.Block
@@ -128,7 +90,7 @@ func Replacer(file []byte, structures []*Structure) ([]byte, error) {
 		blocks = append(blocks, textreplacer.Block{
 			Start: elem.MetaData.StartPos - 1,
 			End:   elem.MetaData.EndPos - 1,
-			Txt:   elem.MetaData.Data,
+			Txt:   elem.MetaData.Text,
 		})
 	}
 	replacer := textreplacer.New(file)

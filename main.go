@@ -90,10 +90,7 @@ func main() {
 
 	// Print results if view flag is set
 	if *viewFlag || *vFlag {
-		ViewMode = true
 		printFiles(filesToWork)
-	} else {
-		ViewMode = false
 	}
 
 	applyFixes(filesToWork)

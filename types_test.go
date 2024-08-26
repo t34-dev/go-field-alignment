@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -57,30 +59,33 @@ type TestStruct struct {
 	c bool
 }
 `
-	results, _, err := ParseStrings(input)
+	structures, _, err := ParseStrings(input)
+	calculateStructures(structures, true)
+	optimizeStructure(structures)
+	calculateStructures(structures, false)
+	renderStructures(structures)
 	if err != nil {
 		t.Fatalf("ParseStrings failed: %v", err)
 	}
 
-	if len(results) != 1 {
-		t.Fatalf("Expected 1 result, got %d", len(results))
+	if len(structures) != 1 {
+		t.Fatalf("Expected 1 result, got %d", len(structures))
 	}
 
-	if results[0].Name != "TestStruct" {
-		t.Errorf("Expected struct name 'TestStruct', got '%s'", results[0].Name)
+	if structures[0].Name != "TestStruct" {
+		t.Errorf("Expected struct name 'TestStruct', got '%s'", structures[0].Name)
 	}
 
 	// Check that sizes were calculated
-	if results[0].MetaData.BeforeSize == 0 || results[0].MetaData.AfterSize == 0 {
-		t.Errorf("Expected non-zero sizes, got before: %d, after: %d", results[0].MetaData.BeforeSize, results[0].MetaData.AfterSize)
+	if structures[0].MetaData.BeforeSize == 0 || structures[0].MetaData.AfterSize == 0 {
+		t.Errorf("Expected non-zero sizes, got before: %d, after: %d", structures[0].MetaData.BeforeSize, structures[0].MetaData.AfterSize)
 	}
 
-	// TODO
 	// Check that the field order has changed (optimization)
-	//optimizedStructString := string(results[0].Data)
-	//if !strings.Contains(optimizedStructString, "b int64\n\ta bool\n\tc bool") {
-	//	t.Errorf("Expected fields to be reordered, got: %s", optimizedStructString)
-	//}
+	optimizedStructString := string(structures[0].MetaData.Text)
+	if !strings.Contains(optimizedStructString, "b int64\n\ta bool\n\tc bool") {
+		t.Errorf("Expected fields to be reordered, got: %s", optimizedStructString)
+	}
 }
 
 // TestParseBytes tests the Parse function.
@@ -95,23 +100,23 @@ type TestStruct struct {
 	c string
 }
 `)
-	results, _, err := Parse(input)
+	structures, _, err := Parse(input)
 	if err != nil {
 		t.Fatalf("Parse failed: %v", err)
 	}
 
-	if len(results) != 1 {
-		t.Fatalf("Expected 1 result, got %d", len(results))
+	if len(structures) != 1 {
+		t.Fatalf("Expected 1 result, got %d", len(structures))
 	}
 
-	if results[0].Name != "TestStruct" {
-		t.Errorf("Expected struct name 'TestStruct', got '%s'", results[0].Name)
+	if structures[0].Name != "TestStruct" {
+		t.Errorf("Expected struct name 'TestStruct', got '%s'", structures[0].Name)
 	}
 }
 
 // TestReplacer tests the Replacer function.
 // It checks if the function can replace the original struct definition
-// with an optimized version. Note: Some checks are currently commented out (TODO).
+// with an optimized version.
 func TestReplacer(t *testing.T) {
 	original := []byte(`package main
 
@@ -121,32 +126,29 @@ type TestStruct struct {
 	c bool
 }
 `)
-	results, _, err := Parse(original)
+	structures, _, err := Parse(original)
 	if err != nil {
 		t.Fatalf("Parse failed: %v", err)
 	}
 
-	_, err = Replacer(original, results)
-	//modified, err := Replacer(original, results)
+	_, err = Replacer(original, structures)
+	modified, err := Replacer(original, structures)
 	if err != nil {
 		t.Fatalf("Replacer failed: %v", err)
 	}
 
-	// TODO
-	//if bytes.Equal(original, modified) {
-	//	t.Errorf("Expected modified content to be different from original")
-	//}
+	if bytes.Equal(original, modified) {
+		t.Errorf("Expected modified content to be different from original")
+	}
 
-	// TODO
-	//if !bytes.Contains(modified, []byte("TestStruct")) {
-	//	t.Errorf("Modified content should still contain 'TestStruct'")
-	//}
+	if !bytes.Contains(modified, []byte("TestStruct")) {
+		t.Errorf("Modified content should still contain 'TestStruct'")
+	}
 
-	// TODO
-	// Check that the field order has changed
-	//if !bytes.Contains(modified, []byte("b int64\n\ta bool\n\tc bool")) {
-	//	t.Errorf("Expected fields to be reordered in the modified content")
-	//}
+	//Check that the field order has changed
+	if !bytes.Contains(modified, []byte("b int64\n\ta bool\n\tc bool")) {
+		t.Errorf("Expected fields to be reordered in the modified content")
+	}
 }
 
 // TestParseFile is a mock test for the ParseFile function.
