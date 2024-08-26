@@ -1,8 +1,8 @@
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
-[![Coverage Status](https://coveralls.io/repos/github/t34-dev/go-pad/badge.svg?branch=main&ver=1724704755)](https://coveralls.io/github/t34-dev/go-pad?branch=main&ver=1724704755)
+[![Coverage Status](https://coveralls.io/repos/github/t34-dev/go-pad-alignment/badge.svg?branch=main&ver=1724704755)](https://coveralls.io/github/t34-dev/go-pad-alignment?branch=main&ver=1724704755)
 ![Go Version](https://img.shields.io/badge/Go-1.22-blue?logo=go&ver=1724704755)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/t34-dev/go-pad?ver=1724704755)
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/t34-dev/go-pad?sort=semver&style=flat&logo=git&logoColor=white&label=Latest%20Version&color=blue&ver=1724704755)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/t34-dev/go-pad-alignment?ver=1724704755)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/t34-dev/go-pad-alignment?sort=semver&style=flat&logo=git&logoColor=white&label=Latest%20Version&color=blue&ver=1724704755)
 
 
 # Go-Pad
@@ -26,7 +26,7 @@ Gopad is a powerful tool designed for Golang developers to enhance code readabil
 To install `gopad`, make sure you have Go installed on your system, then run:
 
 ```shell
-go install github.com/t34-dev/go-pad
+go install github.com/t34-dev/go-pad-alignment
 ```
 
 For local installation
