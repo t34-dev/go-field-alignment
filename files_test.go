@@ -340,6 +340,7 @@ func testAccessRights(t *testing.T, dir string) {
 		if err != nil {
 			t.Fatalf("Failed to change file permissions: %v", err)
 		}
+		output, _ = runCommand("--files", dir)
 		if !strings.Contains(output, "permission denied") {
 			t.Errorf("Expected warning about permission denied on non-Windows systems, got: %s", output)
 		}
