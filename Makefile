@@ -8,6 +8,7 @@ export GOPRIVATE=$(APP_REPOSITORY)/*
 include .make/get-started.mk
 include .make/tag.mk
 include .make/test.mk
+include .make/help.mk
 
 build:
 	@go build -o .bin/$(APP_NAME)$(APP_EXT) .

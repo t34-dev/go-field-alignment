@@ -2,11 +2,9 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
-	"sort"
 	"strings"
 )
 
@@ -71,28 +69,6 @@ func findMatchingFiles(path string, fileRegex, ignoreRegex *regexp.Regexp, oldFi
 	})
 }
 
-// printFiles prints the sorted list of files.
-func printFiles(files map[string]interface{}) {
-	if len(files) == 0 {
-		return
-	}
-
-	// Create a slice to store the keys (file paths)
-	keys := make([]string, 0, len(files))
-	for file := range files {
-		keys = append(keys, file)
-	}
-
-	// Sort the slice
-	sort.Strings(keys)
-
-	fmt.Println("------------------------")
-	for _, file := range keys {
-		fmt.Println(file)
-	}
-	fmt.Println("------------------------")
-}
-
 // printUsage prints the usage information for the program.
 func printUsage() {
 	fmt.Println("Usage of gopad:")
@@ -112,30 +88,8 @@ func printUsage() {
 	fmt.Println("  gopad --files folder1 --pattern \"\\.(go|txt)$\" --view")
 	fmt.Println("  gopad --files \"example, example, example/ignore\" --pattern \"(_test\\.go$|^filename_)\" --ignore-pattern \"_ignore\\.go$\" --view")
 	fmt.Println("  gopad --files \"example, example/userx_test.go\" --ignore-pattern \"_test\\.go|ignore\\.go$\" -v")
-	fmt.Println("  gopad --files \"pkg\"")
-	fmt.Println("  gopad --files \"pkg\" --ignore-pattern \"_test\\.go$\"")
-	fmt.Println("  gopad --files \"pkg\" --pattern \"_test\\.go$\"")
-	fmt.Println("  gopad --files folder1 --fix")
-}
-
-// applyFixes applies fixes to the specified files.
-func applyFixes(files map[string]interface{}) {
-	fmt.Println("Applying fixes to files:")
-	for file := range files {
-		fmt.Printf("Fixing file: %s\n", file)
-
-		// read files
-		openFile, err := os.ReadFile(file)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		results, _, err := Parse(openFile)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		if false {
-			fmt.Println(results)
-		}
-		// applyFixToFile(file)
-	}
+	fmt.Println("  gopad --files \"example\"")
+	fmt.Println("  gopad --files \"example\" --ignore-pattern \"_test\\.go$\"")
+	fmt.Println("  gopad --files \"example\" --pattern \"_test\\.go$\"")
+	fmt.Println("  gopad --files example --fix")
 }

@@ -181,3 +181,36 @@ func isValidCustomTypeName(s string) bool {
 
 	return true
 }
+
+func deepCopy(src *Structure) *Structure {
+	elem := &Structure{
+		Name:        src.Name,
+		Path:        src.Path,
+		Root:        src.Root,
+		RootField:   src.RootField,
+		StructType:  src.StructType,
+		StringType:  src.StringType,
+		IsStructure: src.IsStructure,
+		Size:        src.Size,
+		Align:       src.Align,
+		Offset:      src.Offset,
+	}
+	if src.MetaData != nil {
+		elem.MetaData = &MetaData{
+			BeforeSize: src.MetaData.BeforeSize,
+			AfterSize:  src.MetaData.AfterSize,
+			Data:       src.MetaData.Data,
+			StartPos:   src.MetaData.StartPos,
+			EndPos:     src.MetaData.EndPos,
+		}
+	}
+	if src.NestedFields != nil {
+		newNestedFields := make([]*Structure, 0, len(src.NestedFields))
+		for _, item := range src.NestedFields {
+			newNestedFields = append(newNestedFields, deepCopy(item))
+		}
+		elem.NestedFields = newNestedFields
+	}
+
+	return elem
+}

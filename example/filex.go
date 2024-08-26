@@ -1,6 +1,7 @@
-package fileout
+package example
 
-type BadStruct struct {
+// BadStructX is structure
+type BadStructX struct {
 	a  bool // 1 byte
 	x1 struct {
 		a  bool  // 1 byte
@@ -15,8 +16,13 @@ type BadStruct struct {
 	xx struct {
 		a bool  // 1 byte
 		b int32 // 4 bytes
-		c bool  // 1 byte
+		c struct {
+			a bool  // 1 byte
+			b int32 `json:"logo" db:"logo" example:"http://url"` // 4 bytes
+			c bool  // 1 byte
+			d int64 // 8 bytes
+		}
 		d int64 // 8 bytes
 	}
 	x bool // 1 byte
-}
+} // BIG

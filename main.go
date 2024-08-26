@@ -3,8 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -32,6 +34,7 @@ func main() {
 	ignorePatternFlag := flag.String("ignore-pattern", "", "Regex pattern for files to ignore")
 	versionFlag := flag.Bool("version", false, "Print the version of the program")
 	helpFlag := flag.Bool("help", false, "Print usage information")
+	debugFlag := flag.Bool("debug", false, "Enable debug mode")
 
 	// Parse flags
 	flag.Parse()
@@ -53,6 +56,9 @@ func main() {
 	ignores := mergeFlags(*ignoreFlag, *iFlag)
 	filePattern := *filePatternFlag
 	ignorePattern := *ignorePatternFlag
+	debugMode := *debugFlag
+	fixMode := *fixFlag
+	viewMode := *viewFlag || *vFlag
 
 	// Ensure filePattern is not empty
 	if filePattern == "" {
@@ -86,15 +92,104 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println("Files found:", len(filesToWork))
+	fmt.Printf("Files analyzed: %d\n-----------------\n", len(filesToWork))
 
-	// Print results if view flag is set
-	if *viewFlag || *vFlag {
-		printFiles(filesToWork)
+	allFiles := make([]string, 0, len(filesToWork))
+	for filePath := range filesToWork {
+		allFiles = append(allFiles, filePath)
 	}
+	sort.Strings(allFiles)
 
-	applyFixes(filesToWork)
-	// Apply fixes if fix flag is set
-	if *fixFlag {
+	codeExit := 0
+	for _, filePath := range allFiles {
+		// read files
+		openFile, err := os.ReadFile(filePath)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		structures, mapStructures, err := Parse(openFile)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		calculateStructures(structures, true)
+
+		oldStructures := make([]*Structure, 0, len(structures))
+		for _, structure := range structures {
+			copied := deepCopy(structure)
+			oldStructures = append(oldStructures, copied)
+		}
+		oldStructuresMapper := createMapper(oldStructures)
+
+		optimizeMapperStructures(mapStructures)
+		calculateStructures(structures, false)
+		needFix := false
+		for _, structure := range structures {
+			if structure.MetaData.BeforeSize > structure.MetaData.AfterSize {
+				codeExit += 1
+				needFix = true
+				break
+			}
+		}
+		if viewMode || needFix {
+			fmt.Printf("%s\n", filePath)
+		}
+		for idx, structure := range structures {
+			if structure.MetaData.BeforeSize > structure.MetaData.AfterSize {
+				alert := fmt.Sprintf("can free %d bytes", structure.MetaData.BeforeSize-structure.MetaData.AfterSize)
+				if fixMode {
+					alert = "Fixed"
+				}
+				fmt.Printf("%s%-15s %d(b) -> %d(b) %s!\n", strings.Repeat(" ", 3),
+					structure.Name,
+					structure.MetaData.BeforeSize,
+					structure.MetaData.AfterSize,
+					alert)
+				if debugMode {
+					oldStructure, ok := oldStructuresMapper[structure.Path]
+					if ok {
+						fmt.Printf("%s%-20s\n", strings.Repeat(" ", 9), "------------------------------------------ [BEFORE]")
+						testPrintStructure(oldStructure, 9)
+						fmt.Printf("%s%-20s\n", strings.Repeat(" ", 9), "------------------------------------------ [AFTER]")
+						testPrintStructure(structure, 9)
+					}
+				}
+				if idx != len(structures)-1 && debugMode {
+					fmt.Println()
+				}
+			} else {
+				if viewMode {
+					fmt.Printf("%s%-15s ✓\n", strings.Repeat(" ", 3), structure.Name)
+				}
+			}
+		}
+		if viewMode && len(structures) > 0 {
+			fmt.Println()
+		}
+
+		// FIX
+		if !fixMode {
+			continue
+		}
+		err = renderTextStructures(structures)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// Replace content
+		resultFile, err := Replacer(openFile, structures)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = os.WriteFile(filePath, resultFile, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	if codeExit > 0 {
+		if !fixMode {
+			fmt.Printf("-----------------\nFound structures that need to be optimized.")
+			os.Exit(1)
+		} else {
+			fmt.Printf("-----------------\nApplying fixes to structures: %d", codeExit)
+		}
 	}
 }

@@ -7,15 +7,15 @@ type ExampleExp struct {
 			F int64
 			D int32
 			A bool `json:"id" db:"id"`
-			C bool // тут текст
+			C bool // text
 
 			E bool
 		}
 		B int64 `json:"logo" db:"logo" example:"http://url"`
-		F int64 // тут коммент
+		F int64 // comment
 
 		A bool `json:"id" db:"id"`
-		C bool // тут текст
+		C bool // comment2
 
 		E bool
 	}
@@ -23,6 +23,6 @@ type ExampleExp struct {
 	F int64
 	D int32
 	A bool `json:"id" db:"id"`
-	C bool // тут текст
+	C bool // comment3
 
 }

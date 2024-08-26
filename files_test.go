@@ -75,7 +75,7 @@ func testBasicUsage(t *testing.T, dir string) {
 	if err != nil {
 		t.Errorf("Basic usage failed: %v", err)
 	}
-	if !strings.Contains(output, "Files found: 1") {
+	if !strings.Contains(output, "Files analyzed: 1") {
 		t.Errorf("Unexpected output for basic usage: %s", output)
 	}
 
@@ -83,7 +83,7 @@ func testBasicUsage(t *testing.T, dir string) {
 	if err != nil {
 		t.Errorf("Basic usage with short flag failed: %v", err)
 	}
-	if !strings.Contains(output, "Files found: 2") {
+	if !strings.Contains(output, "Files analyzed: 2") {
 		t.Errorf("Unexpected output for basic usage with short flag: %s", output)
 	}
 }
@@ -94,7 +94,7 @@ func testIgnoreFiles(t *testing.T, dir string) {
 	if err != nil {
 		t.Errorf("Ignore files failed: %v", err)
 	}
-	if !strings.Contains(output, "Files found: 3") {
+	if !strings.Contains(output, "Files analyzed: 3") {
 		t.Errorf("Unexpected output for ignore files: %s", output)
 	}
 
@@ -102,7 +102,7 @@ func testIgnoreFiles(t *testing.T, dir string) {
 	if err != nil {
 		t.Errorf("Ignore files with short flag failed: %v", err)
 	}
-	if !strings.Contains(output, "Files found: 3") {
+	if !strings.Contains(output, "Files analyzed: 3") {
 		t.Errorf("Unexpected output for ignore files with short flag: %s", output)
 	}
 }
@@ -128,12 +128,57 @@ func testViewFiles(t *testing.T, dir string) {
 
 // testApplyFixes tests the fix applying functionality of gopad.
 func testApplyFixes(t *testing.T, dir string) {
-	output, err := runCommand("--files", filepath.Join(dir, "main.go"), "--fix")
+	filePath := filepath.Join(dir, "main.go")
+
+	// Сохраняем исходное содержимое файла
+	originalContent, err := os.ReadFile(filePath)
+	if err != nil {
+		t.Fatalf("Failed to read original file content: %v", err)
+	}
+	// Функция для восстановления исходного содержимого
+	defer func() {
+		err := os.WriteFile(filePath, originalContent, 0644)
+		if err != nil {
+			t.Errorf("Failed to restore original file content: %v", err)
+		}
+	}()
+
+	// Добавляем тестовую структуру с невыровненными полями
+	testStructure := `package main
+
+type TestStruct struct {
+    a bool
+    b int64
+    c bool
+}
+`
+	err = os.WriteFile(filePath, []byte(testStructure), 0644)
+	if err != nil {
+		t.Fatalf("Failed to write test structure to file: %v", err)
+	}
+
+	output, err := runCommand("--files", filePath, "--fix")
 	if err != nil {
 		t.Errorf("Apply fixes failed: %v", err)
 	}
-	if !strings.Contains(output, "Applying fixes to files:") {
+	if !strings.Contains(output, "Applying fixes to structures:") {
 		t.Errorf("Unexpected output for apply fixes: %s", output)
+	}
+	// Проверяем, что структура была оптимизирована
+	optimizedContent, err := os.ReadFile(filePath)
+	if err != nil {
+		t.Fatalf("Failed to read optimized file content: %v", err)
+	}
+
+	expectedOptimizedStructure := `package main
+
+type TestStruct struct {
+	b int64
+	a bool
+	c bool
+}`
+	if !strings.Contains(string(optimizedContent), expectedOptimizedStructure) {
+		t.Errorf("Structure was not optimized as expected. Got:\n%s", string(optimizedContent))
 	}
 }
 
@@ -143,7 +188,7 @@ func testFilePatterns(t *testing.T, dir string) {
 	if err != nil {
 		t.Errorf("File patterns failed: %v", err)
 	}
-	if !strings.Contains(output, "Files found: 5") {
+	if !strings.Contains(output, "Files analyzed: 5") {
 		t.Errorf("Unexpected output for file patterns: %s", output)
 	}
 
@@ -151,7 +196,7 @@ func testFilePatterns(t *testing.T, dir string) {
 	if err != nil {
 		t.Errorf("Ignore patterns failed: %v", err)
 	}
-	if !strings.Contains(output, "Files found: 4") {
+	if !strings.Contains(output, "Files analyzed: 4") {
 		t.Errorf("Unexpected output for ignore patterns: %s", output)
 	}
 }
@@ -212,7 +257,7 @@ func testFlagCombinations(t *testing.T, dir string) {
 	if err != nil {
 		t.Errorf("Flag combinations failed: %v", err)
 	}
-	if !strings.Contains(output, "Files found: 4") || !strings.Contains(output, filepath.Join(dir, "main.go")) {
+	if !strings.Contains(output, "Files analyzed: 4") || !strings.Contains(output, filepath.Join(dir, "main.go")) {
 		t.Errorf("Unexpected output for flag combinations: %s", output)
 	}
 }
@@ -233,7 +278,7 @@ func testPathsWithSpaces(t *testing.T, dir string) {
 	if err != nil {
 		t.Errorf("Paths with spaces failed: %v", err)
 	}
-	if !strings.Contains(output, "Files found: 1") {
+	if !strings.Contains(output, "Files analyzed: 1") {
 		t.Errorf("Unexpected output for paths with spaces: %s", output)
 	}
 }
@@ -244,7 +289,7 @@ func testRecursiveTraversal(t *testing.T, dir string) {
 	if err != nil {
 		t.Errorf("Recursive traversal failed: %v", err)
 	}
-	if !strings.Contains(output, "Files found: 6") {
+	if !strings.Contains(output, "Files analyzed: 6") {
 		t.Errorf("Unexpected output for recursive traversal: %s", output)
 	}
 }
@@ -261,7 +306,7 @@ func testSymbolicLinks(t *testing.T, dir string) {
 	if err != nil {
 		t.Errorf("Symbolic links failed: %v", err)
 	}
-	if !strings.Contains(output, "Files found: 1") {
+	if !strings.Contains(output, "Files analyzed: 1") {
 		t.Errorf("Unexpected output for symbolic links: %s", output)
 	}
 }
@@ -325,9 +370,9 @@ func countGoFiles(t *testing.T, dir string) int {
 // extractFileCount extracts the number of files found from gopad's output.
 func extractFileCount(output string) int {
 	for _, line := range strings.Split(output, "\n") {
-		if strings.Contains(line, "Files found:") {
+		if strings.Contains(line, "Files analyzed:") {
 			var count int
-			_, err := fmt.Sscanf(line, "Files found: %d", &count)
+			_, err := fmt.Sscanf(line, "Files analyzed: %d", &count)
 			if err == nil {
 				return count
 			}
