@@ -1,4 +1,4 @@
-package fileout
+package enter
 
 import (
 	"fmt"
@@ -22,8 +22,7 @@ dsdsd
 dsds
 */
 
-type MyTest2 struct {
-}
+type MyTest2 struct{}
 
 type MyTest3 struct {
 }

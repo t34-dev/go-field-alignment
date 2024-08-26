@@ -29,13 +29,23 @@ func TestStructAlignment(t *testing.T) {
 	}
 
 	// parser
-	results, err := ParseBytes(enterFIle)
+	structures, mapper, err := Parse(enterFIle)
 	if err != nil {
 		t.Fatal(err)
 	}
+	calculateStructures(structures, true)
+	debugPrintStructures(structures)
 
+	optimizeMapperStructures(mapper)
+	calculateStructures(structures, false)
+	debugPrintStructures(structures)
+
+	err = renderTextStructures(structures)
+	if err != nil {
+		t.Fatal(err)
+	}
 	// Replace content
-	resultFile, err := Replacer(enterFIle, results)
+	resultFile, err := Replacer(enterFIle, structures)
 	if err != nil {
 		t.Fatal(err)
 	}

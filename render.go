@@ -4,7 +4,7 @@ import "fmt"
 
 // ============= Render
 
-// renderStructure generates a string representation of an ItemInfo structure.
+// renderStructure generates a string representation of an Structure structure.
 // It handles both top-level structures and nested fields, including their
 // documentation, tags, and comments. The function recursively processes
 // nested structures to create a complete representation.
@@ -17,11 +17,11 @@ import "fmt"
 // - Handles both root-level and nested comments
 //
 // Parameters:
-// - elem: Pointer to an ItemInfo structure to be rendered
+// - elem: Pointer to an Structure structure to be rendered
 //
 // Returns:
 // - A string containing the rendered structure
-func renderStructure(elem *ItemInfo) string {
+func renderStructure(elem *Structure) string {
 	data := ""
 
 	isValidCustomNameType := isValidCustomTypeName(elem.StringType)
@@ -78,4 +78,15 @@ func renderStructure(elem *ItemInfo) string {
 		}
 	}
 	return data
+}
+
+func renderTextStructures(structures []*Structure) error {
+	for _, structure := range structures {
+		code, err := formatGoCode(renderStructure(structure))
+		if err != nil {
+			return err
+		}
+		structure.MetaData.Data = []byte(code)
+	}
+	return nil
 }

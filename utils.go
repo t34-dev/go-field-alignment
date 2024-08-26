@@ -126,9 +126,9 @@ func getFieldListString(fields *ast.FieldList) string {
 	return strings.Join(parts, ", ")
 }
 
-// sortMapKeysBySlashCount sorts ItemInfo slices by their path's slash count
-func sortMapKeysBySlashCount(inputMap map[string]*ItemInfo) []*ItemInfo {
-	items := make([]*ItemInfo, 0, len(inputMap))
+// sortMapKeysBySlashCount sorts Structure slices by their path's slash count
+func sortMapKeysBySlashCount(inputMap map[string]*Structure) []*Structure {
+	items := make([]*Structure, 0, len(inputMap))
 	for _, v := range inputMap {
 		items = append(items, v)
 	}

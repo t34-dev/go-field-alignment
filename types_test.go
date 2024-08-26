@@ -57,7 +57,7 @@ type TestStruct struct {
 	c bool
 }
 `
-	results, err := ParseStrings(input)
+	results, _, err := ParseStrings(input)
 	if err != nil {
 		t.Fatalf("ParseStrings failed: %v", err)
 	}
@@ -66,13 +66,13 @@ type TestStruct struct {
 		t.Fatalf("Expected 1 result, got %d", len(results))
 	}
 
-	if results[0].NameStructure != "TestStruct" {
-		t.Errorf("Expected struct name 'TestStruct', got '%s'", results[0].NameStructure)
+	if results[0].Name != "TestStruct" {
+		t.Errorf("Expected struct name 'TestStruct', got '%s'", results[0].Name)
 	}
 
 	// Check that sizes were calculated
-	if results[0].BeforeSize == 0 || results[0].AfterSize == 0 {
-		t.Errorf("Expected non-zero sizes, got before: %d, after: %d", results[0].BeforeSize, results[0].AfterSize)
+	if results[0].MetaData.BeforeSize == 0 || results[0].MetaData.AfterSize == 0 {
+		t.Errorf("Expected non-zero sizes, got before: %d, after: %d", results[0].MetaData.BeforeSize, results[0].MetaData.AfterSize)
 	}
 
 	// TODO
@@ -83,8 +83,8 @@ type TestStruct struct {
 	//}
 }
 
-// TestParseBytes tests the ParseBytes function.
-// It verifies that the function can correctly parse a byte slice containing
+// TestParseBytes tests the Parse function.
+// It verifies that the function can correctly parseData a byte slice containing
 // a struct definition and produce the expected results.
 func TestParseBytes(t *testing.T) {
 	input := []byte(`package main
@@ -95,17 +95,17 @@ type TestStruct struct {
 	c string
 }
 `)
-	results, err := ParseBytes(input)
+	results, _, err := Parse(input)
 	if err != nil {
-		t.Fatalf("ParseBytes failed: %v", err)
+		t.Fatalf("Parse failed: %v", err)
 	}
 
 	if len(results) != 1 {
 		t.Fatalf("Expected 1 result, got %d", len(results))
 	}
 
-	if results[0].NameStructure != "TestStruct" {
-		t.Errorf("Expected struct name 'TestStruct', got '%s'", results[0].NameStructure)
+	if results[0].Name != "TestStruct" {
+		t.Errorf("Expected struct name 'TestStruct', got '%s'", results[0].Name)
 	}
 }
 
@@ -121,9 +121,9 @@ type TestStruct struct {
 	c bool
 }
 `)
-	results, err := ParseBytes(original)
+	results, _, err := Parse(original)
 	if err != nil {
-		t.Fatalf("ParseBytes failed: %v", err)
+		t.Fatalf("Parse failed: %v", err)
 	}
 
 	_, err = Replacer(original, results)
@@ -155,7 +155,7 @@ type TestStruct struct {
 func TestParseFile(t *testing.T) {
 	// In a real scenario, you would create a temporary file for testing
 	// Here we just check that the function exists and returns the expected type
-	_, err := ParseFile("non_existent_file.go")
+	_, _, err := ParseFile("non_existent_file.go")
 	if err == nil {
 		t.Errorf("Expected error for non-existent file, got nil")
 	}

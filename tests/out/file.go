@@ -1,4 +1,4 @@
-package fileout
+package enter
 
 import (
 	"fmt"
@@ -7,16 +7,16 @@ import (
 
 // Test comment
 type MyTest struct {
-	a     bool // 1 byte
-	nameX string
-	b     bool // 1 byte
-	App   struct {
+	App struct {
 		// LogLevel
 		LogLevel                  string        `yaml:"log_level" env-default:"info"` // 2 text
 		Name                      string        `yaml:"name" env-default:"ms-sso"`
-		IsProduction              bool          `yaml:"is_production" env:"IS_PRODUCTION" yaml-default:"true"`
 		TimeToConfirmRegistration time.Duration `yaml:"tim_to_confirm_registration" env-required:"24h"`
+		IsProduction              bool          `yaml:"is_production" env:"IS_PRODUCTION" yaml-default:"true"`
 	} `yaml:"app"`
+	nameX string
+	a     bool // 1 byte
+	b     bool // 1 byte
 } /* some text
 dsdsd
 dsds

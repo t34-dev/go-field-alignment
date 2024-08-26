@@ -137,17 +137,17 @@ func TestGetFuncTypeString(t *testing.T) {
 }
 
 // TestSortMapKeysBySlashCount tests the sortMapKeysBySlashCount function.
-// It verifies that the function correctly sorts ItemInfo slices
+// It verifies that the function correctly sorts Structure slices
 // based on the number of slashes in their paths.
 func TestSortMapKeysBySlashCount(t *testing.T) {
-	input := map[string]*ItemInfo{
+	input := map[string]*Structure{
 		"a":     {Path: "a"},
 		"a/b":   {Path: "a/b"},
 		"a/b/c": {Path: "a/b/c"},
 		"x/y":   {Path: "x/y"},
 	}
 
-	expected := []*ItemInfo{
+	expected := []*Structure{
 		{Path: "a/b/c"},
 		{Path: "a/b"},
 		{Path: "x/y"},

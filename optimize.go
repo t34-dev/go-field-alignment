@@ -10,7 +10,7 @@ import (
 // optimizeStructure reorganizes the fields of a structure to minimize padding and optimize memory usage.
 // It sorts fields by alignment and size, separates regular fields from arrays and slices,
 // and recalculates field offsets for the optimized structure.
-func optimizeStructure(fields []*ItemInfo) []*ItemInfo {
+func optimizeStructure(fields []*Structure) []*Structure {
 	// Sort fields in descending order of alignment, then in descending order of size
 	sort.Slice(fields, func(i, j int) bool {
 		if fields[i].Align != fields[j].Align {
@@ -20,7 +20,7 @@ func optimizeStructure(fields []*ItemInfo) []*ItemInfo {
 	})
 
 	// Separately process arrays and slices
-	var regularFields, arrayFields []*ItemInfo
+	var regularFields, arrayFields []*Structure
 	for _, field := range fields {
 		if strings.HasPrefix(field.StringType, "[") || strings.HasPrefix(field.StringType, "[]") {
 			arrayFields = append(arrayFields, field)
@@ -43,9 +43,9 @@ func optimizeStructure(fields []*ItemInfo) []*ItemInfo {
 	return optimizedFields
 }
 
-// optimizeStructures applies the optimizeStructure function to all structures in the given map.
+// optimizeMapperStructures applies the optimizeStructure function to all structures in the given map.
 // It processes structures in order of their nesting depth (determined by the number of slashes in their path).
-func optimizeStructures(mapStructures map[string]*ItemInfo) {
+func optimizeMapperStructures(mapStructures map[string]*Structure) {
 	mapperItemsFlat := sortMapKeysBySlashCount(mapStructures)
 	for _, structure := range mapperItemsFlat {
 		if structure.IsStructure {

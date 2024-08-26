@@ -129,7 +129,7 @@ func applyFixes(files map[string]interface{}) {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		results, err := ParseBytes(openFile)
+		results, _, err := Parse(openFile)
 		if err != nil {
 			log.Fatalln(err)
 		}

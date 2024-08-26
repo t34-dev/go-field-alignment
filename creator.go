@@ -28,13 +28,13 @@ func createItemInfoPath(name, parentName string) string {
 	return name
 }
 
-// createItemInfo creates an ItemInfo structure from the given AST node.
+// createItemInfo creates an Structure structure from the given AST node.
 // It handles TypeSpec and Field nodes, processing their contents and creating nested structures as needed.
-// The function also updates the provided mapper with the created ItemInfo.
-func createItemInfo(data interface{}, parentData *ItemInfo, mapper map[string]*ItemInfo) *ItemInfo {
+// The function also updates the provided mapper with the created Structure.
+func createItemInfo(data interface{}, parentData *Structure, mapper map[string]*Structure) *Structure {
 	switch Elem := data.(type) {
 	case *ast.TypeSpec:
-		newItem := &ItemInfo{
+		newItem := &Structure{
 			Name:        createItemInfoName(Elem),
 			Root:        Elem,
 			StructType:  Elem.Type,
@@ -56,7 +56,7 @@ func createItemInfo(data interface{}, parentData *ItemInfo, mapper map[string]*I
 		}
 		return newItem
 	case *ast.Field:
-		newItem := &ItemInfo{
+		newItem := &Structure{
 			Name:       createItemInfoName(Elem),
 			RootField:  Elem,
 			StructType: Elem.Type,
