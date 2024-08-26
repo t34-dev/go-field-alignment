@@ -9,6 +9,8 @@
 
 Gopad is a powerful tool designed for Golang developers to enhance code readability by performing multi-level field alignment in struct declarations while preserving original metadata.
 
+![TypeScript WebSocket Client Logo](./example.png)
+
 ## Features
 
 - Analyzes struct field alignment and padding in Go source files
