@@ -4,7 +4,8 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/t34-dev/go-pad?ver=1723825072)
 ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/t34-dev/go-pad?sort=semver&style=flat&logo=git&logoColor=white&label=Latest%20Version&color=blue&ver=1723825072)
 
-# GoPad
+
+# Go-Pad
 
 Gopad is a powerful tool designed for Golang developers to enhance code readability by performing multi-level field alignment in struct declarations while preserving original metadata.
 
