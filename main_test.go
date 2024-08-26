@@ -38,7 +38,7 @@ func TestStructAlignment(t *testing.T) {
 	calculateStructures(structures, false)
 	debugPrintStructures(structures)
 
-	err = renderStructures(structures)
+	err = renderTextStructures(structures)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -80,13 +80,13 @@ func renderStructure(elem *Structure) string {
 	return data
 }
 
-func renderStructures(structures []*Structure) error {
+func renderTextStructures(structures []*Structure) error {
 	for _, structure := range structures {
 		code, err := formatGoCode(renderStructure(structure))
 		if err != nil {
 			return err
 		}
-		structure.MetaData.Text = []byte(code)
+		structure.MetaData.Data = []byte(code)
 	}
 	return nil
 }

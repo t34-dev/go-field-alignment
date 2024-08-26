@@ -13,7 +13,7 @@ import (
 type MetaData struct {
 	BeforeSize uintptr
 	AfterSize  uintptr
-	Text       []byte
+	Data       []byte
 	StartPos   int
 	EndPos     int
 }
@@ -90,7 +90,7 @@ func Replacer(file []byte, structures []*Structure) ([]byte, error) {
 		blocks = append(blocks, textreplacer.Block{
 			Start: elem.MetaData.StartPos - 1,
 			End:   elem.MetaData.EndPos - 1,
-			Txt:   elem.MetaData.Text,
+			Txt:   elem.MetaData.Data,
 		})
 	}
 	replacer := textreplacer.New(file)

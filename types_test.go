@@ -59,30 +59,33 @@ type TestStruct struct {
 	c bool
 }
 `
-	structures, _, err := ParseStrings(input)
-	calculateStructures(structures, true)
-	optimizeStructure(structures)
-	calculateStructures(structures, false)
-	renderStructures(structures)
+	results, mapperData, err := ParseStrings(input)
 	if err != nil {
 		t.Fatalf("ParseStrings failed: %v", err)
 	}
-
-	if len(structures) != 1 {
-		t.Fatalf("Expected 1 result, got %d", len(structures))
+	calculateStructures(results, true)
+	optimizeMapperStructures(mapperData)
+	calculateStructures(results, false)
+	err = renderTextStructures(results)
+	if err != nil {
+		t.Fatalf("Parse failed: %v", err)
 	}
 
-	if structures[0].Name != "TestStruct" {
-		t.Errorf("Expected struct name 'TestStruct', got '%s'", structures[0].Name)
+	if len(results) != 1 {
+		t.Fatalf("Expected 1 result, got %d", len(results))
+	}
+
+	if results[0].Name != "TestStruct" {
+		t.Errorf("Expected struct name 'TestStruct', got '%s'", results[0].Name)
 	}
 
 	// Check that sizes were calculated
-	if structures[0].MetaData.BeforeSize == 0 || structures[0].MetaData.AfterSize == 0 {
-		t.Errorf("Expected non-zero sizes, got before: %d, after: %d", structures[0].MetaData.BeforeSize, structures[0].MetaData.AfterSize)
+	if results[0].MetaData.BeforeSize == 0 || results[0].MetaData.AfterSize == 0 {
+		t.Errorf("Expected non-zero sizes, got before: %d, after: %d", results[0].MetaData.BeforeSize, results[0].MetaData.AfterSize)
 	}
 
 	// Check that the field order has changed (optimization)
-	optimizedStructString := string(structures[0].MetaData.Text)
+	optimizedStructString := string(results[0].MetaData.Data)
 	if !strings.Contains(optimizedStructString, "b int64\n\ta bool\n\tc bool") {
 		t.Errorf("Expected fields to be reordered, got: %s", optimizedStructString)
 	}
@@ -100,17 +103,17 @@ type TestStruct struct {
 	c string
 }
 `)
-	structures, _, err := Parse(input)
+	results, _, err := Parse(input)
 	if err != nil {
 		t.Fatalf("Parse failed: %v", err)
 	}
 
-	if len(structures) != 1 {
-		t.Fatalf("Expected 1 result, got %d", len(structures))
+	if len(results) != 1 {
+		t.Fatalf("Expected 1 result, got %d", len(results))
 	}
 
-	if structures[0].Name != "TestStruct" {
-		t.Errorf("Expected struct name 'TestStruct', got '%s'", structures[0].Name)
+	if results[0].Name != "TestStruct" {
+		t.Errorf("Expected struct name 'TestStruct', got '%s'", results[0].Name)
 	}
 }
 
@@ -126,13 +129,20 @@ type TestStruct struct {
 	c bool
 }
 `)
-	structures, _, err := Parse(original)
+	results, mapperData, err := Parse(original)
+	if err != nil {
+		t.Fatalf("Parse failed: %v", err)
+	}
+	calculateStructures(results, true)
+	optimizeMapperStructures(mapperData)
+	calculateStructures(results, false)
+	err = renderTextStructures(results)
 	if err != nil {
 		t.Fatalf("Parse failed: %v", err)
 	}
 
-	_, err = Replacer(original, structures)
-	modified, err := Replacer(original, structures)
+	_, err = Replacer(original, results)
+	modified, err := Replacer(original, results)
 	if err != nil {
 		t.Fatalf("Replacer failed: %v", err)
 	}

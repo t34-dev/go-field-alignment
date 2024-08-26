@@ -43,4 +43,6 @@ func Get() {
 	f4 := MyTest4{}
 	f5 := MyTest5{}
 	fmt.Println(f, f2, f3, f4, f5, Name)
+
+	//name
 }
