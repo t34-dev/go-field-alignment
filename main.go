@@ -186,10 +186,11 @@ func main() {
 	}
 	if codeExit > 0 {
 		if !fixMode {
-			fmt.Printf("-----------------\nFound structures that need to be optimized.")
+			fmt.Printf("-----------------\nFound files: %d. That need to be optimized.\n", codeExit)
 			os.Exit(1)
 		} else {
-			fmt.Printf("-----------------\nApplying fixes to structures: %d", codeExit)
+			fmt.Printf("-----------------\nApplying fixes to files: %d\n", codeExit)
 		}
+		fmt.Println()
 	}
 }
