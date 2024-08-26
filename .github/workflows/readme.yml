@@ -16,20 +16,32 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
       - name: Get the version
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
+#       README
       - name: Update README.md badges
         run: |
           current_time=$(date +%s)
           sed -i 's/\(ver=\)[0-9]*/\1'"$current_time"'/g' README.md
 
+#      VERSION
+      - name: Update version.go
+        run: |
+          sed -i 's/const version = "[0-9.]*"/const version = "${{ steps.get_version.outputs.VERSION }}"/' version.go
+          git add version.go
+
       - name: Commit changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add README.md
+          git add README.md version.go
           git commit -m "Update version to ${{ steps.get_version.outputs.VERSION }}"
 
       - name: Push changes
