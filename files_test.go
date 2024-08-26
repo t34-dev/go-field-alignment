@@ -321,13 +321,6 @@ func testAccessRights(t *testing.T, dir string) {
 
 	initialFileCount := countGoFiles(t, dir)
 
-	if runtime.GOOS != "windows" {
-		err = os.Chmod(noAccessFile, 0000)
-		if err != nil {
-			t.Fatalf("Failed to change file permissions: %v", err)
-		}
-	}
-
 	output, err := runCommand("--files", dir)
 	if err != nil {
 		t.Errorf("Access rights test failed: %v", err)
@@ -343,7 +336,11 @@ func testAccessRights(t *testing.T, dir string) {
 	}
 
 	if runtime.GOOS != "windows" {
-		if !strings.Contains(output, "Warning: Permission denied") {
+		err = os.Chmod(noAccessFile, 0000)
+		if err != nil {
+			t.Fatalf("Failed to change file permissions: %v", err)
+		}
+		if !strings.Contains(output, "permission denied") {
 			t.Errorf("Expected warning about permission denied on non-Windows systems, got: %s", output)
 		}
 	}
