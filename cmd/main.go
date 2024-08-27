@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	version "github.com/t34-dev/go-pad-alignment"
 	"log"
 	"os"
 	"regexp"
@@ -41,7 +42,7 @@ func main() {
 
 	// Check for version flag
 	if *versionFlag || command == "version" {
-		fmt.Printf("Version: %s\n", version)
+		fmt.Printf("Version: %s\n", version.Version)
 		return
 	}
 

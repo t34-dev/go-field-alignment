@@ -1,4 +1,4 @@
-package main
+package version
 
-// version represents the current version of the program
-const version = "1.0.6"
+// Version represents the current Version of the program
+const Version = "1.0.6"
