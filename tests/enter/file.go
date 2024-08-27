@@ -5,6 +5,9 @@ import (
 	"time"
 )
 
+type STR string
+type STRs []string
+
 // Test comment
 type MyTest struct {
 	a     bool // 1 byte

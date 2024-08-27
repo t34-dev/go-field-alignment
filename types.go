@@ -62,20 +62,22 @@ func parseData(path string, bytes []byte) ([]*Structure, map[string]*Structure, 
 
 	ast.Inspect(node, func(n ast.Node) bool {
 		if typeSpec, ok := n.(*ast.TypeSpec); ok {
-			startPos := int(typeSpec.Pos()) - len("type ")
-			plus := 0
-			if typeSpec.Comment != nil && len(typeSpec.Comment.List) > 0 {
-				plus += len(typeSpec.Comment.List[0].Text) + 1
-			}
-			endPos := int(typeSpec.Type.End()) + plus
-			metaData := MetaData{
-				StartPos: startPos,
-				EndPos:   endPos,
-			}
-			item := createItemInfo(typeSpec, nil, mapperItems)
-			item.MetaData = &metaData
-			if item != nil {
-				structures = append(structures, item)
+			if _, ok2 := typeSpec.Type.(*ast.StructType); ok2 {
+				startPos := int(typeSpec.Pos()) - len("type ")
+				plus := 0
+				if typeSpec.Comment != nil && len(typeSpec.Comment.List) > 0 {
+					plus += len(typeSpec.Comment.List[0].Text) + 1
+				}
+				endPos := int(typeSpec.Type.End()) + plus
+				metaData := MetaData{
+					StartPos: startPos,
+					EndPos:   endPos,
+				}
+				item := createItemInfo(typeSpec, nil, mapperItems)
+				item.MetaData = &metaData
+				if item != nil {
+					structures = append(structures, item)
+				}
 			}
 		}
 		return true
