@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   update-readme:
+    if: "!contains(github.event.head_commit.message, 'Update version by GitHub Action')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -42,8 +43,14 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add README.md version.go
-          git commit -m "Update version to ${{ steps.get_version.outputs.VERSION }}"
+          git commit -m "Update version to ${{ steps.get_version.outputs.VERSION }} by GitHub Action"
 
       - name: Push changes
         run: |
           git push origin HEAD:${{ github.event.repository.default_branch }}
+
+      - name: Move tag
+        run: |
+          git push --delete origin ${{ github.ref }}
+          git tag -fa ${{ github.ref_name }} -m "Update version to ${{ steps.get_version.outputs.VERSION }}"
+          git push origin ${{ github.ref_name }}
