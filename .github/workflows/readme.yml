@@ -34,7 +34,7 @@ jobs:
 #      VERSION
       - name: Update version.go
         run: |
-          sed -i 's/const version = "[0-9.]*"/const version = "${{ steps.get_version.outputs.VERSION }}"/' version.go
+          sed -i 's/const Version = "[0-9.]*"/const Version = "${{ steps.get_version.outputs.VERSION }}"/' version.go
           git add version.go
 
       - name: Commit changes
