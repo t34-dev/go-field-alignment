@@ -30,7 +30,14 @@ Go-Pad is a powerful tool designed for Golang developers to enhance code readabi
 To install `gopad`, make sure you have Go installed on your system, then run:
 
 ```shell
-go install github.com/t34-dev/go-pad-alignment
+# get all versions
+go list -m -versions github.com/t34-dev/go-pad-alignment
+
+# get package
+go get -u github.com/t34-dev/go-pad-alignment@latest
+
+# install package
+go install github.com/t34-dev/go-pad-alignment/cmd/gopad@latest
 ```
 
 For local installation:
