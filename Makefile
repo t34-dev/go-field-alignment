@@ -16,7 +16,7 @@ build:
 example: build
 	@.bin/$(APP_NAME)${APP_EXT} --files "example" -v
 
-install:
-	@go build -o $(GOPATH)/bin/$(APP_NAME)$(APP_EXT)
+install: build
+	@cp .bin/$(APP_NAME)${APP_EXT} $(GOPATH)/bin/$(APP_NAME)$(APP_EXT)
 
-.PHONY: install
+.PHONY: install build example
