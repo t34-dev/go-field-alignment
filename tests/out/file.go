@@ -7,6 +7,13 @@ import (
 
 type Problem1 struct{}
 type Problem2 struct{}
+type Problem3 struct {
+	hello string
+	time.Time
+	time.Duration
+	time.Location
+	typer bool
+}
 
 type STR string
 type STRs []string

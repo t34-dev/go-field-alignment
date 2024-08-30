@@ -42,7 +42,7 @@ func createItemInfo(data interface{}, parentData *Structure, mapper map[string]*
 			StringType:  getTypeString(Elem.Type),
 		}
 		if newItem.Name == "" {
-			return nil
+			newItem.Name = "!" + newItem.StringType
 		}
 		newItem.Path = createItemInfoPath(newItem.Name, "")
 		mapper[newItem.Path] = newItem
@@ -63,7 +63,7 @@ func createItemInfo(data interface{}, parentData *Structure, mapper map[string]*
 			StringType: getTypeString(Elem.Type),
 		}
 		if newItem.Name == "" {
-			return nil
+			newItem.Name = "!" + newItem.StringType
 		}
 		newItem.Path = createItemInfoPath(newItem.Name, parentData.Path)
 		mapper[newItem.Path] = newItem

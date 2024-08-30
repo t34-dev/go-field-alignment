@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ============= Render
 
@@ -45,6 +48,9 @@ func renderStructure(elem *Structure) string {
 			for _, comment := range field.RootField.Doc.List {
 				data += fmt.Sprintln(comment.Text)
 			}
+		}
+		if strings.HasPrefix(field.Name, "!") {
+			field.Name = ""
 		}
 		data += fmt.Sprintf("%s %s ", field.Name, renderStructure(field))
 		// Tag

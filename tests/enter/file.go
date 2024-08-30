@@ -8,6 +8,13 @@ import (
 type Problem1 struct{}
 type Problem2 struct {
 }
+type Problem3 struct {
+	hello string
+	typer bool
+	time.Time
+	time.Duration
+	time.Location
+}
 
 type STR string
 type STRs []string
