@@ -16,5 +16,5 @@ tag-up:
 		echo "Current branch: $(CURRENT_BRANCH)"; \
 		exit 1; \
 	fi
-	@git fetch --tags
-	@echo $(GIT_NEW_TAG) && git tag "v$(GIT_NEW_TAG)" && git push origin "v$(GIT_NEW_TAG)"
+	@git fetch --tags --force
+	@echo $(GIT_NEW_TAG) && git tag "v$(GIT_NEW_TAG)" && git push origin --force "v$(GIT_NEW_TAG)"
