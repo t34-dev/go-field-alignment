@@ -5,15 +5,21 @@ import (
 	"time"
 )
 
+type Problem1 struct{}
+type Problem2 struct {
+}
+
 type STR string
 type STRs []string
 
 // Test comment
 type MyTest struct {
-	a     bool // 1 byte
-	nameX string
-	b     bool // 1 byte
-	App   struct {
+	a        bool // 1 byte
+	nameX    string
+	Problem1 struct {
+	}
+	b   bool // 1 byte
+	App struct {
 		// LogLevel
 		LogLevel                  string        `yaml:"log_level" env-default:"info"` // 2 text
 		Name                      string        `yaml:"name" env-default:"ms-sso"`

@@ -31,9 +31,12 @@ func renderStructure(elem *Structure) string {
 
 	if elem.Root != nil {
 		data += fmt.Sprintf("type ")
-		data += fmt.Sprintf("%s struct{\n", elem.Name)
+		data += fmt.Sprintf("%s struct{", elem.Name)
 	} else {
-		data += fmt.Sprintf("struct {\n")
+		data += fmt.Sprintf("struct {")
+	}
+	if len(elem.NestedFields) > 0 {
+		data += fmt.Sprintf("\n")
 	}
 
 	for idx, field := range elem.NestedFields {
@@ -82,7 +85,8 @@ func renderStructure(elem *Structure) string {
 
 func renderTextStructures(structures []*Structure) error {
 	for _, structure := range structures {
-		code, err := formatGoCode(renderStructure(structure))
+		txtCode := renderStructure(structure)
+		code, err := formatGoCode(txtCode)
 		if err != nil {
 			return err
 		}

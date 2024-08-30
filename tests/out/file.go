@@ -5,6 +5,9 @@ import (
 	"time"
 )
 
+type Problem1 struct{}
+type Problem2 struct{}
+
 type STR string
 type STRs []string
 
@@ -17,25 +20,22 @@ type MyTest struct {
 		TimeToConfirmRegistration time.Duration `yaml:"tim_to_confirm_registration" env-required:"24h"`
 		IsProduction              bool          `yaml:"is_production" env:"IS_PRODUCTION" yaml-default:"true"`
 	} `yaml:"app"`
-	nameX string
-	a     bool // 1 byte
-	b     bool // 1 byte
+	nameX    string
+	a        bool // 1 byte
+	b        bool // 1 byte
+	Problem1 struct{}
 } /* some text
 dsdsd
 dsds
 */
 
-type MyTest2 struct {
-}
+type MyTest2 struct{}
 
-type MyTest3 struct {
-}
+type MyTest3 struct{}
 
-type MyTest4 struct {
-} // test
+type MyTest4 struct{} // test
 
-type MyTest5 struct {
-} // test
+type MyTest5 struct{} // test
 
 var Name = "dsds"
 
