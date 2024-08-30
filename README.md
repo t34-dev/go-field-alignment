@@ -37,7 +37,9 @@ go list -m -versions github.com/t34-dev/go-field-alignment
 go get -u github.com/t34-dev/go-field-alignment@latest
 
 # install package
-go install github.com/t34-dev/go-field-alignment/cmd/gofield@latest
+go install github.com/t34-dev/go-field-alignment/v2/cmd/gofield@latest
+or
+go install github.com/t34-dev/go-field-alignment/v2/cmd/gofield@v2.0.3
 ```
 
 For local installation:
