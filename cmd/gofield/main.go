@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	version "github.com/t34-dev/go-field-alignment"
+	version "github.com/t34-dev/go-field-alignment/v2"
 	"log"
 	"os"
 	"regexp"

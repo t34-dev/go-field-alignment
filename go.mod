@@ -1,4 +1,4 @@
-module github.com/t34-dev/go-field-alignment
+module github.com/t34-dev/go-field-alignment/v2
 
 go 1.22.4
 
