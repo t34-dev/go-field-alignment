@@ -7,10 +7,10 @@ import (
 )
 
 // testEnterFile is the path to the input test file
-const testEnterFile = "../tests/enter/file.go"
+const testEnterFile = "../../tests/enter/file.go"
 
 // testOutFile is the path to the expected output test file
-const testOutFile = "../tests/out/file.go"
+const testOutFile = "../../tests/out/file.go"
 
 // TestStructAlignment tests the alignment and optimization of struct fields.
 // It reads input and expected output files, applies the optimization,

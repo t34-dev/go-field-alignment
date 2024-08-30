@@ -94,6 +94,7 @@ gopad [options] <file or directory paths>
 5. View files that would be processed without making changes:
    ```
    gopad --files src,pkg --view
+   gopad --files "./internal/models/, ./cmd/" --view
    ```
 
 6. Process multiple directories while ignoring specific folders:

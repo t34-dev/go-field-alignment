@@ -11,7 +11,7 @@ include .make/test.mk
 include .make/help.mk
 
 build:
-	@go build -o .bin/$(APP_NAME)$(APP_EXT) gopad/*
+	@go build -o .bin/$(APP_NAME)$(APP_EXT) cmd/gopad/*
 
 example: build
 	@.bin/$(APP_NAME)${APP_EXT} --files "example" -v
