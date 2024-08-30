@@ -37,7 +37,7 @@ go list -m -versions github.com/t34-dev/go-pad-alignment
 go get -u github.com/t34-dev/go-pad-alignment@latest
 
 # install package
-go install github.com/t34-dev/go-pad-alignment/gopad/...@latest
+go install github.com/t34-dev/go-pad-alignment/cmd/gopad@latest
 ```
 
 For local installation:
