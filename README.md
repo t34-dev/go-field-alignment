@@ -1,10 +1,10 @@
 # Go-Pad
 
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
-[![Coverage Status](https://coveralls.io/repos/github/t34-dev/go-pad-alignment/badge.svg?branch=main&ver=1725014699)](https://coveralls.io/github/t34-dev/go-pad-alignment?branch=main&ver=1725014699)
-![Go Version](https://img.shields.io/badge/Go-1.22-blue?logo=go&ver=1725014699)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/t34-dev/go-pad-alignment?ver=1725014699)
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/t34-dev/go-pad-alignment?sort=semver&style=flat&logo=git&logoColor=white&label=Latest%20Version&color=blue&ver=1725014699)
+[![Coverage Status](https://coveralls.io/repos/github/t34-dev/go-pad-alignment/badge.svg?branch=main&ver=1725014899)](https://coveralls.io/github/t34-dev/go-pad-alignment?branch=main&ver=1725014899)
+![Go Version](https://img.shields.io/badge/Go-1.22-blue?logo=go&ver=1725014899)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/t34-dev/go-pad-alignment?ver=1725014899)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/t34-dev/go-pad-alignment?sort=semver&style=flat&logo=git&logoColor=white&label=Latest%20Version&color=blue&ver=1725014899)
 
 Go-Pad is a powerful tool designed for Golang developers to enhance code readability and optimize memory usage by performing multi-level field alignment in struct declarations while preserving original metadata.
 
