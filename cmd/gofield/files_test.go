@@ -11,10 +11,10 @@ import (
 	"testing"
 )
 
-// TestGoPadding is the main test function that runs all subtests for the gopad program.
+// TestGoPadding is the main test function that runs all subtests for the gofield program.
 func TestGoPadding(t *testing.T) {
 	// Setup: Create a temporary directory for test files
-	tempDir, err := os.MkdirTemp("", "gopad-test")
+	tempDir, err := os.MkdirTemp("", "gofield-test")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -62,14 +62,14 @@ func createTestFiles(t *testing.T, dir string) {
 	}
 }
 
-// runCommand executes the gopad program with the given arguments and returns the output.
+// runCommand executes the gofield program with the given arguments and returns the output.
 func runCommand(args ...string) (string, error) {
 	cmd := exec.Command("go", append([]string{"run", "."}, args...)...)
 	output, err := cmd.CombinedOutput()
 	return string(output), err
 }
 
-// testBasicUsage tests the basic usage of the gopad program.
+// testBasicUsage tests the basic usage of the gofield program.
 func testBasicUsage(t *testing.T, dir string) {
 	output, err := runCommand("--files", filepath.Join(dir, "main.go"))
 	if err != nil {
@@ -88,7 +88,7 @@ func testBasicUsage(t *testing.T, dir string) {
 	}
 }
 
-// testIgnoreFiles tests the file ignoring functionality of gopad.
+// testIgnoreFiles tests the file ignoring functionality of gofield.
 func testIgnoreFiles(t *testing.T, dir string) {
 	output, err := runCommand("--files", dir, "--ignore", filepath.Join(dir, "test.go")+","+filepath.Join(dir, "ignore_me.go"))
 	if err != nil {
@@ -107,7 +107,7 @@ func testIgnoreFiles(t *testing.T, dir string) {
 	}
 }
 
-// testViewFiles tests the file viewing functionality of gopad.
+// testViewFiles tests the file viewing functionality of gofield.
 func testViewFiles(t *testing.T, dir string) {
 	output, err := runCommand("--files", dir, "--view")
 	if err != nil {
@@ -126,7 +126,7 @@ func testViewFiles(t *testing.T, dir string) {
 	}
 }
 
-// testApplyFixes tests the fix applying functionality of gopad.
+// testApplyFixes tests the fix applying functionality of gofield.
 func testApplyFixes(t *testing.T, dir string) {
 	filePath := filepath.Join(dir, "main.go")
 
@@ -182,7 +182,7 @@ type TestStruct struct {
 	}
 }
 
-// testFilePatterns tests the file pattern matching functionality of gopad.
+// testFilePatterns tests the file pattern matching functionality of gofield.
 func testFilePatterns(t *testing.T, dir string) {
 	output, err := runCommand("--files", dir, "--pattern", "\\.go$")
 	if err != nil {
@@ -201,13 +201,13 @@ func testFilePatterns(t *testing.T, dir string) {
 	}
 }
 
-// testErrorHandling tests various error scenarios in gopad.
+// testErrorHandling tests various error scenarios in gofield.
 func testErrorHandling(t *testing.T, dir string) {
 	output, err := runCommand()
 	if err != nil {
 		t.Errorf("Unexpected error when running without arguments: %v", err)
 	}
-	if !strings.Contains(output, "Usage of gopad:") {
+	if !strings.Contains(output, "Usage of gofield:") {
 		t.Errorf("Expected usage information, got: %s", output)
 	}
 
@@ -232,7 +232,7 @@ func testErrorHandling(t *testing.T, dir string) {
 	}
 }
 
-// testUtilityFunctions tests utility functions like version and help in gopad.
+// testUtilityFunctions tests utility functions like version and help in gofield.
 func testUtilityFunctions(t *testing.T) {
 	output, err := runCommand("--version")
 	if err != nil {
@@ -246,12 +246,12 @@ func testUtilityFunctions(t *testing.T) {
 	if err != nil {
 		t.Errorf("Help check failed: %v", err)
 	}
-	if !strings.Contains(output, "Usage of gopad:") {
+	if !strings.Contains(output, "Usage of gofield:") {
 		t.Errorf("Unexpected output for help check: %s", output)
 	}
 }
 
-// testFlagCombinations tests various combinations of flags in gopad.
+// testFlagCombinations tests various combinations of flags in gofield.
 func testFlagCombinations(t *testing.T, dir string) {
 	output, err := runCommand("--files", dir, "--ignore", filepath.Join(dir, "test.go"), "--view", "--pattern", "\\.go$")
 	if err != nil {
@@ -262,7 +262,7 @@ func testFlagCombinations(t *testing.T, dir string) {
 	}
 }
 
-// testPathsWithSpaces tests gopad's behavior with paths containing spaces.
+// testPathsWithSpaces tests gofield's behavior with paths containing spaces.
 func testPathsWithSpaces(t *testing.T, dir string) {
 	spaceDir := filepath.Join(dir, "folder with spaces")
 	err := os.Mkdir(spaceDir, 0755)
@@ -283,7 +283,7 @@ func testPathsWithSpaces(t *testing.T, dir string) {
 	}
 }
 
-// testRecursiveTraversal tests gopad's recursive directory traversal.
+// testRecursiveTraversal tests gofield's recursive directory traversal.
 func testRecursiveTraversal(t *testing.T, dir string) {
 	output, err := runCommand("--files", dir, "--pattern", "\\.go$")
 	if err != nil {
@@ -294,7 +294,7 @@ func testRecursiveTraversal(t *testing.T, dir string) {
 	}
 }
 
-// testSymbolicLinks tests gopad's handling of symbolic links.
+// testSymbolicLinks tests gofield's handling of symbolic links.
 func testSymbolicLinks(t *testing.T, dir string) {
 	linkFile := filepath.Join(dir, "link_file.go")
 	err := os.Symlink(filepath.Join(dir, "main.go"), linkFile)
@@ -311,7 +311,7 @@ func testSymbolicLinks(t *testing.T, dir string) {
 	}
 }
 
-// testAccessRights tests gopad's behavior with files having different access rights.
+// testAccessRights tests gofield's behavior with files having different access rights.
 func testAccessRights(t *testing.T, dir string) {
 	noAccessFile := filepath.Join(dir, "no_access.go")
 	err := os.WriteFile(noAccessFile, []byte("package noaccess"), 0644)
@@ -365,7 +365,7 @@ func countGoFiles(t *testing.T, dir string) int {
 	return count
 }
 
-// extractFileCount extracts the number of files found from gopad's output.
+// extractFileCount extracts the number of files found from gofield's output.
 func extractFileCount(output string) int {
 	for _, line := range strings.Split(output, "\n") {
 		if strings.Contains(line, "Files analyzed:") {

@@ -71,8 +71,8 @@ func findMatchingFiles(path string, fileRegex, ignoreRegex *regexp.Regexp, oldFi
 
 // printUsage prints the usage information for the program.
 func printUsage() {
-	fmt.Println("Usage of gopad:")
-	fmt.Println("  gopad --files <files> [options]")
+	fmt.Println("Usage of gofield:")
+	fmt.Println("  gofield --files <files> [options]")
 	fmt.Println("\nOptions:")
 	fmt.Println("  --files, -f            Comma-separated list of files or folders to process (required)")
 	fmt.Println("  --ignore, -i          Comma-separated list of files or folders to ignore")
@@ -83,13 +83,13 @@ func printUsage() {
 	fmt.Println("  --version             Print the version of the program")
 	fmt.Println("  --help                Print this help message")
 	fmt.Println("\nExamples:")
-	fmt.Println("  gopad --files folder1,folder2 --ignore folder/ignore")
-	fmt.Println("  gopad -f \"folder1, folder2/\" -i \"folder/ignore, folder2/ignore\"")
-	fmt.Println("  gopad --files folder1 --pattern \"\\.(go|txt)$\" --view")
-	fmt.Println("  gopad --files \"example, example, example/ignore\" --pattern \"(_test\\.go$|^filename_)\" --ignore-pattern \"_ignore\\.go$\" --view")
-	fmt.Println("  gopad --files \"example, example/userx_test.go\" --ignore-pattern \"_test\\.go|ignore\\.go$\" -v")
-	fmt.Println("  gopad --files \"example\"")
-	fmt.Println("  gopad --files \"example\" --ignore-pattern \"_test\\.go$\"")
-	fmt.Println("  gopad --files \"example\" --pattern \"_test\\.go$\"")
-	fmt.Println("  gopad --files example --fix")
+	fmt.Println("  gofield --files folder1,folder2 --ignore folder/ignore")
+	fmt.Println("  gofield -f \"folder1, folder2/\" -i \"folder/ignore, folder2/ignore\"")
+	fmt.Println("  gofield --files folder1 --pattern \"\\.(go|txt)$\" --view")
+	fmt.Println("  gofield --files \"example, example, example/ignore\" --pattern \"(_test\\.go$|^filename_)\" --ignore-pattern \"_ignore\\.go$\" --view")
+	fmt.Println("  gofield --files \"example, example/userx_test.go\" --ignore-pattern \"_test\\.go|ignore\\.go$\" -v")
+	fmt.Println("  gofield --files \"example\"")
+	fmt.Println("  gofield --files \"example\" --ignore-pattern \"_test\\.go$\"")
+	fmt.Println("  gofield --files \"example\" --pattern \"_test\\.go$\"")
+	fmt.Println("  gofield --files example --fix")
 }

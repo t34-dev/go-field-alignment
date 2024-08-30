@@ -1,4 +1,4 @@
-module github.com/t34-dev/go-pad-alignment
+module github.com/t34-dev/go-field-alignment
 
 go 1.22.4
 

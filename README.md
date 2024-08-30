@@ -1,15 +1,15 @@
-# Go-Pad
+# Go-Field
 
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
-[![Coverage Status](https://coveralls.io/repos/github/t34-dev/go-pad-alignment/badge.svg?branch=main&ver=1725014699)](https://coveralls.io/github/t34-dev/go-pad-alignment?branch=main&ver=1725014699)
+[![Coverage Status](https://coveralls.io/repos/github/t34-dev/go-field-alignment/badge.svg?branch=main&ver=1725014699)](https://coveralls.io/github/t34-dev/go-field-alignment?branch=main&ver=1725014699)
 ![Go Version](https://img.shields.io/badge/Go-1.22-blue?logo=go&ver=1725014699)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/t34-dev/go-pad-alignment?ver=1725014699)
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/t34-dev/go-pad-alignment?sort=semver&style=flat&logo=git&logoColor=white&label=Latest%20Version&color=blue&ver=1725014699)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/t34-dev/go-field-alignment?ver=1725014699)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/t34-dev/go-field-alignment?sort=semver&style=flat&logo=git&logoColor=white&label=Latest%20Version&color=blue&ver=1725014699)
 
-Go-Pad is a powerful tool designed for Golang developers to enhance code readability and optimize memory usage by performing multi-level field alignment in struct declarations while preserving original metadata.
+Go-Field is a powerful tool designed for Golang developers to enhance code readability and optimize memory usage by performing multi-level field alignment in struct declarations while preserving original metadata.
 
-![Go-Pad Example](./example.png)
-![Go-Pad Example2](./example2.png)
+![Go-Field Example](./example.png)
+![Go-Field Example2](./example2.png)
 
 ## Features
 
@@ -27,25 +27,25 @@ Go-Pad is a powerful tool designed for Golang developers to enhance code readabi
 
 ## Installation
 
-To install `gopad`, make sure you have Go installed on your system, then run:
+To install `gofield`, make sure you have Go installed on your system, then run:
 
 ```shell
 # get all versions
-go list -m -versions github.com/t34-dev/go-pad-alignment
+go list -m -versions github.com/t34-dev/go-field-alignment
 
 # get package
-go get -u github.com/t34-dev/go-pad-alignment@latest
+go get -u github.com/t34-dev/go-field-alignment@latest
 
 # install package
-go install github.com/t34-dev/go-pad-alignment/cmd/gopad@latest
+go install github.com/t34-dev/go-field-alignment/cmd/gofield@latest
 ```
 
 For local installation:
 
 ```shell
 # Bash
-go build -o $GOPATH/bin/gopad       # Unix
-go build -o $GOPATH/bin/gopad.exe   # Windows
+go build -o $GOPATH/bin/gofield       # Unix
+go build -o $GOPATH/bin/gofield.exe   # Windows
 
 # Makefile
 make install                        # Any system
@@ -54,7 +54,7 @@ make install                        # Any system
 ## Usage
 
 ```
-gopad [options] <file or directory paths>
+gofield [options] <file or directory paths>
 ```
 
 ### Options
@@ -73,48 +73,48 @@ gopad [options] <file or directory paths>
 
 1. Analyze all Go files in the current directory:
    ```
-   gopad --files .
+   gofield --files .
    ```
 
 2. Optimize structs in specific files:
    ```
-   gopad --files main.go,utils.go --fix
+   gofield --files main.go,utils.go --fix
    ```
 
 3. Process files matching a custom pattern:
    ```
-   gopad --files src --pattern "\\.(go|proto)$"
+   gofield --files src --pattern "\\.(go|proto)$"
    ```
 
 4. Ignore test files:
    ```
-   gopad --files . --ignore-pattern "_test\\.go$"
+   gofield --files . --ignore-pattern "_test\\.go$"
    ```
 
 5. View files that would be processed without making changes:
    ```
-   gopad --files src,pkg --view
-   gopad --files "./internal/models/, ./cmd/" --view
+   gofield --files src,pkg --view
+   gofield --files "./internal/models/, ./cmd/" --view
    ```
 
 6. Process multiple directories while ignoring specific folders:
    ```
-   gopad --files "gopad,internal" --ignore "internal/generated"
+   gofield --files "gofield,internal" --ignore "internal/generated"
    ```
 
 7. Use debug mode for detailed analysis:
    ```
-   gopad --files main.go --debug
+   gofield --files main.go --debug
    ```
 
 8. Combine multiple options:
    ```
-   gopad --files "src,pkg" --ignore "pkg/generated" --pattern "\\.(go|pb\\.go)$" --fix --view
+   gofield --files "src,pkg" --ignore "pkg/generated" --pattern "\\.(go|pb\\.go)$" --fix --view
    ```
 
 ## Output
 
-For each struct found in the processed files, `gopad` will output:
+For each struct found in the processed files, `gofield` will output:
 
 - Struct name
 - Total size of the struct (before and after optimization)
@@ -128,22 +128,22 @@ For each struct found in the processed files, `gopad` will output:
 
 If the `--fix` option is used, it will also show the optimized layout of the struct and apply the changes to the source files.
 
-When using the `--debug` option, Go-Pad provides a detailed before-and-after comparison of struct layouts.
+When using the `--debug` option, Go-Field provides a detailed before-and-after comparison of struct layouts.
 
 ## How It Works
 
-1. Go-Pad parses the specified Go source files and identifies all struct declarations.
+1. Go-Field parses the specified Go source files and identifies all struct declarations.
 2. It analyzes the current layout of each struct, calculating sizes, alignments, and paddings.
 3. The tool then optimizes the struct layout by reordering fields to minimize padding while maintaining correct alignment.
-4. If the `--fix` option is used, Go-Pad rewrites the struct declarations in the source files with the optimized layout.
+4. If the `--fix` option is used, Go-Field rewrites the struct declarations in the source files with the optimized layout.
 5. The tool preserves all comments and formatting to maintain code readability.
 
 ## Best Practices
 
-- Run Go-Pad on your project before committing changes to ensure optimal struct layouts.
+- Run Go-Field on your project before committing changes to ensure optimal struct layouts.
 - Use the `--view` option to preview which files would be affected before applying fixes.
-- Integrate Go-Pad into your CI/CD pipeline to catch suboptimal struct layouts early.
-- When optimizing performance-critical code, use Go-Pad in conjunction with benchmarking to measure the impact of struct optimizations.
+- Integrate Go-Field into your CI/CD pipeline to catch suboptimal struct layouts early.
+- When optimizing performance-critical code, use Go-Field in conjunction with benchmarking to measure the impact of struct optimizations.
 
 ## Contributing
 
@@ -163,7 +163,7 @@ This project is licensed under the ISC License. See the [LICENSE](LICENSE) file 
 
 ## Support
 
-If you encounter any issues or have questions, please file an issue on the [GitHub repository](https://github.com/t34-dev/go-pad-alignment/issues).
+If you encounter any issues or have questions, please file an issue on the [GitHub repository](https://github.com/t34-dev/go-field-alignment/issues).
 
 ---
 

@@ -1,6 +1,6 @@
 DEV_DIR := $(CURDIR)
 APP_REPOSITORY := github.com/t34-dev
-APP_NAME := gopad
+APP_NAME := gofield
 APP_EXT := $(if $(filter Windows_NT,$(OS)),.exe)
 export GOPRIVATE=$(APP_REPOSITORY)/*
 
@@ -11,7 +11,7 @@ include .make/test.mk
 include .make/help.mk
 
 build:
-	@go build -o .bin/$(APP_NAME)$(APP_EXT) cmd/gopad/*
+	@go build -o .bin/$(APP_NAME)$(APP_EXT) cmd/gofield/*
 
 example: build
 	@.bin/$(APP_NAME)${APP_EXT} --files "example" -v
