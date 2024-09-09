@@ -9,7 +9,7 @@
 Go-Field is a powerful tool designed for Golang developers to enhance code readability and optimize memory usage by performing multi-level field alignment in struct declarations while preserving original metadata.
 
 ![Go-Field Example](./example.png)
-![Go-Field Example2](./example2.png?1)
+![Go-Field Example2](./example_view.png)
 
 ## Features
 
