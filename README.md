@@ -10,11 +10,15 @@ Go-Field is a powerful tool designed for Golang developers to enhance code reada
 
 ![Go-Field Example](./example.png)
 ![Go-Field Example2](./example_view.png)
+![Go-Field Example3](./example_ignore.png)
 
 ## Features
 
 - Analyzes struct field alignment and padding in Go source files
 - Calculates the size and alignment of each struct and its fields
+- single-pass iteration 
+- flexible configuration of files and directories for search 
+- flexible configuration of ignore files (full control)
 - Optimizes struct layout by reordering fields for better memory efficiency
 - Performs multi-level struct field alignment for improved readability
 - Preserves original comments and metadata
@@ -112,6 +116,11 @@ gofield [options] <file or directory paths>
 8. Combine multiple options:
    ```
    gofield --files "src,pkg" --ignore "pkg/generated" --pattern "\\.(go|pb\\.go)$" --fix --view
+   ```
+
+9. Ignore all test files + one special file.:
+   ```
+   gofield -f . --ignore-pattern "file\.go|_test\.go$"
    ```
 
 ## Output
