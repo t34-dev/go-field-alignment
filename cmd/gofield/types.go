@@ -3,10 +3,11 @@ package main
 import (
 	"errors"
 	"fmt"
-	textreplacer "github.com/t34-dev/go-text-replacer"
 	"go/ast"
 	"go/parser"
 	"go/token"
+
+	textreplacer "github.com/t34-dev/go-text-replacer"
 )
 
 // MetaData represents the outcome of struct optimization
@@ -61,24 +62,30 @@ func parseData(path string, bytes []byte) ([]*Structure, map[string]*Structure, 
 	mapperItems := map[string]*Structure{}
 
 	ast.Inspect(node, func(n ast.Node) bool {
-		if typeSpec, ok := n.(*ast.TypeSpec); ok {
-			if _, ok2 := typeSpec.Type.(*ast.StructType); ok2 {
-				startPos := int(typeSpec.Pos()) - len("type ")
-				plus := 0
-				if typeSpec.Comment != nil && len(typeSpec.Comment.List) > 0 {
-					plus += len(typeSpec.Comment.List[0].Text) + 1
-				}
-				endPos := int(typeSpec.Type.End()) + plus
-				metaData := MetaData{
-					StartPos: startPos,
-					EndPos:   endPos,
-				}
-				item := createItemInfo(typeSpec, nil, mapperItems)
-				item.MetaData = &metaData
-				if item != nil {
-					structures = append(structures, item)
-				}
-			}
+		typeSpec, ok := n.(*ast.TypeSpec)
+		if !ok {
+			return true
+		}
+		_, ok = typeSpec.Type.(*ast.StructType)
+		if !ok {
+			return true
+		}
+		// Don't subtract len("type ") here - this leads to incorrect start pos
+		// in cases when struct is in a "type" block (type (...)).
+		startPos := int(typeSpec.Pos())
+		plus := 0
+		if typeSpec.Comment != nil && len(typeSpec.Comment.List) > 0 {
+			plus += len(typeSpec.Comment.List[0].Text) + 1
+		}
+		endPos := int(typeSpec.Type.End()) + plus
+		metaData := MetaData{
+			StartPos: startPos,
+			EndPos:   endPos,
+		}
+		item := createItemInfo(typeSpec, nil, mapperItems)
+		item.MetaData = &metaData
+		if item != nil {
+			structures = append(structures, item)
 		}
 		return true
 	})

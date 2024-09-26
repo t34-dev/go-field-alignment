@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"go/format"
 	"os"
 	"testing"
 )
@@ -38,12 +39,15 @@ func TestStructAlignment(t *testing.T) {
 	calculateStructures(structures, false)
 	debugPrintStructures(structures)
 
-	err = renderTextStructures(structures)
+	renderTextStructures(structures)
+
+	// Replace content
+	resultFile, err := Replacer(enterFIle, structures)
 	if err != nil {
 		t.Fatal(err)
 	}
-	// Replace content
-	resultFile, err := Replacer(enterFIle, structures)
+
+	resultFile, err = format.Source(resultFile)
 	if err != nil {
 		t.Fatal(err)
 	}

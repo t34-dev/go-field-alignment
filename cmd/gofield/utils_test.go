@@ -6,46 +6,6 @@ import (
 	"testing"
 )
 
-// TestFormatGoCode tests the formatGoCode function.
-// It checks if the function correctly formats valid Go code
-// and handles malformed code appropriately.
-func TestFormatGoCode(t *testing.T) {
-	tests := []struct {
-		name     string
-		input    string
-		expected string
-	}{
-		{
-			name:     "simple function",
-			input:    "func main() { fmt.Println(\"Hello, World!\") }",
-			expected: "func main() { fmt.Println(\"Hello, World!\") }",
-		},
-		{
-			name:     "malformed code",
-			input:    "func main() { fmt.Println(\"Hello, World!\") ",
-			expected: "",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result, err := formatGoCode(tt.input)
-			if tt.expected == "" {
-				if err == nil {
-					t.Errorf("Expected error for malformed code, got nil")
-				}
-			} else {
-				if err != nil {
-					t.Errorf("Unexpected error: %v", err)
-				}
-				if result != tt.expected {
-					t.Errorf("Expected %q, got %q", tt.expected, result)
-				}
-			}
-		})
-	}
-}
-
 // TestGetTypeString tests the getTypeString function.
 // It verifies that the function correctly converts various AST expressions
 // to their string representations.

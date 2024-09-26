@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"go/format"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -69,27 +70,109 @@ func findMatchingFiles(path string, fileRegex, ignoreRegex *regexp.Regexp, oldFi
 	})
 }
 
-// printUsage prints the usage information for the program.
-func printUsage() {
-	fmt.Println("Usage of gofield:")
-	fmt.Println("  gofield --files <files> [options]")
-	fmt.Println("\nOptions:")
-	fmt.Println("  --files, -f            Comma-separated list of files or folders to process (required)")
-	fmt.Println("  --ignore, -i          Comma-separated list of files or folders to ignore")
-	fmt.Println("  --view, -v            Print the absolute paths of found files")
-	fmt.Println("  --fix                 Make changes to the files")
-	fmt.Println("  --pattern   		  Regex pattern for files to process (default: \\.go$)")
-	fmt.Println("  --ignore-pattern	  Regex pattern for files to ignore")
-	fmt.Println("  --version             Print the version of the program")
-	fmt.Println("  --help                Print this help message")
-	fmt.Println("\nExamples:")
-	fmt.Println("  gofield --files folder1,folder2 --ignore folder/ignore")
-	fmt.Println("  gofield -f \"folder1, folder2/\" -i \"folder/ignore, folder2/ignore\"")
-	fmt.Println("  gofield --files folder1 --pattern \"\\.(go|txt)$\" --view")
-	fmt.Println("  gofield --files \"example, example, example/ignore\" --pattern \"(_test\\.go$|^filename_)\" --ignore-pattern \"_ignore\\.go$\" --view")
-	fmt.Println("  gofield --files \"example, example/userx_test.go\" --ignore-pattern \"_test\\.go|ignore\\.go$\" -v")
-	fmt.Println("  gofield --files \"example\"")
-	fmt.Println("  gofield --files \"example\" --ignore-pattern \"_test\\.go$\"")
-	fmt.Println("  gofield --files \"example\" --pattern \"_test\\.go$\"")
-	fmt.Println("  gofield --files example --fix")
+// fileProcessingOptions is a set of options which define how file gets processed.
+type fileProcessingOptions struct {
+	viewMode  bool
+	fixMode   bool
+	debugMode bool
+}
+
+// processFile processes a file located at the specified path.
+//
+// Returns true if the file can be optimized (needs fix), false otherwise.
+func processFile(path string, opts fileProcessingOptions) (needFix bool, err error) {
+	fileData, err := os.ReadFile(path)
+	if err != nil {
+		return false, fmt.Errorf("cannot read file: %w", err)
+	}
+	structures, mapStructures, err := Parse(fileData)
+	if err != nil {
+		return false, fmt.Errorf("cannot parse file: %w", err)
+	}
+
+	calculateStructures(structures, true)
+
+	oldStructures := make([]*Structure, 0, len(structures))
+	for _, structure := range structures {
+		copied := deepCopy(structure)
+		oldStructures = append(oldStructures, copied)
+	}
+	oldStructuresMapper := createMapper(oldStructures)
+
+	optimizeMapperStructures(mapStructures)
+	calculateStructures(structures, false)
+
+	for _, structure := range structures {
+		if structure.MetaData.BeforeSize > structure.MetaData.AfterSize {
+			needFix = true
+			break
+		}
+	}
+	if opts.viewMode || needFix {
+		fmt.Printf("%s\n", path)
+	}
+	for idx, structure := range structures {
+		if structure.MetaData.BeforeSize > structure.MetaData.AfterSize {
+			alert := fmt.Sprintf("can free %d bytes", structure.MetaData.BeforeSize-structure.MetaData.AfterSize)
+			if opts.fixMode {
+				alert = "Fixed"
+			}
+			fmt.Printf(
+				"%s%-15s %d(b) -> %d(b) %s!\n",
+				strings.Repeat(" ", 3),
+				structure.Name,
+				structure.MetaData.BeforeSize,
+				structure.MetaData.AfterSize,
+				alert,
+			)
+			if opts.debugMode {
+				oldStructure, ok := oldStructuresMapper[structure.Path]
+				if ok {
+					fmt.Printf("%s%-20s\n", strings.Repeat(" ", 9), "------------------------------------------ [BEFORE]")
+					testPrintStructure(oldStructure, 9)
+					fmt.Printf("%s%-20s\n", strings.Repeat(" ", 9), "------------------------------------------ [AFTER]")
+					testPrintStructure(structure, 9)
+				}
+			}
+			if idx != len(structures)-1 && opts.debugMode {
+				fmt.Println()
+			}
+		} else {
+			if opts.viewMode {
+				fmt.Printf("%s%-15s ✓\n", strings.Repeat(" ", 3), structure.Name)
+			}
+		}
+	}
+	if opts.viewMode && len(structures) > 0 {
+		fmt.Println()
+	}
+
+	if !opts.fixMode || !needFix {
+		// If "fix" has not been requested or there's nothing to fix, exit
+		return needFix, nil
+	}
+
+	// FIX
+	renderTextStructures(structures)
+
+	// Apply replacements
+	resultData, err := Replacer(fileData, structures)
+	if err != nil {
+		return needFix, fmt.Errorf("cannot replace content in file: %w", err)
+	}
+
+	// Format results.
+	//
+	// They need to be formatted after all replacements have been applied
+	formatted, err := format.Source(resultData)
+	if err != nil {
+		return needFix, fmt.Errorf("cannot format result content: %w", err)
+	}
+
+	// Write results
+	err = os.WriteFile(path, formatted, 0644)
+	if err != nil {
+		return needFix, fmt.Errorf("cannot write results to file: %w", err)
+	}
+	return needFix, nil
 }

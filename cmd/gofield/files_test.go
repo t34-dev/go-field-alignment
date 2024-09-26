@@ -161,7 +161,7 @@ type TestStruct struct {
 	if err != nil {
 		t.Errorf("Apply fixes failed: %v", err)
 	}
-	if !strings.Contains(output, "Applying fixes to files:") {
+	if !strings.Contains(output, "Applied fixes to 1 files") {
 		t.Errorf("Unexpected output for apply fixes: %s", output)
 	}
 	// Проверяем, что структура была оптимизирована

@@ -33,7 +33,7 @@ func renderStructure(elem *Structure) string {
 	}
 
 	if elem.Root != nil {
-		data += fmt.Sprintf("type ")
+		// Don't add "type " here, as current structure may be inside a "type" block
 		data += fmt.Sprintf("%s struct{", elem.Name)
 	} else {
 		data += fmt.Sprintf("struct {")
@@ -89,14 +89,12 @@ func renderStructure(elem *Structure) string {
 	return data
 }
 
-func renderTextStructures(structures []*Structure) error {
+func renderTextStructures(structures []*Structure) {
 	for _, structure := range structures {
-		txtCode := renderStructure(structure)
-		code, err := formatGoCode(txtCode)
-		if err != nil {
-			return err
-		}
-		structure.MetaData.Data = []byte(code)
+		// Don't format code here - "renderStructure" generates a replacement for a part of target Go file,
+		// not a valid piece of Go code per-se.
+		//
+		// Code will be formatted afterwards.
+		structure.MetaData.Data = []byte(renderStructure(structure))
 	}
-	return nil
 }
