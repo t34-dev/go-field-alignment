@@ -3,12 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	version "github.com/t34-dev/go-field-alignment/v2"
 	"log"
 	"os"
 	"regexp"
 	"sort"
 	"strings"
+
+	version "github.com/t34-dev/go-field-alignment/v2"
 )
 
 // defaultFilePattern is the default regex pattern for files to process
@@ -18,6 +19,11 @@ const defaultFilePattern = `\.go$`
 // It handles command-line arguments, processes files based on the provided flags,
 // and applies necessary operations on the found files.
 func main() {
+	// Init logging.
+	//
+	// Error logging will go to stderr.
+	log.SetFlags(0)
+
 	command := ""
 	if len(os.Args) == 2 {
 		command = strings.TrimSpace(os.Args[1])
@@ -69,28 +75,24 @@ func main() {
 	// Compile regex patterns
 	fileRegex, err := regexp.Compile(filePattern)
 	if err != nil {
-		fmt.Printf("Error compiling file pattern regex: %v\n", err)
-		os.Exit(1)
+		log.Fatalf("Error compiling file pattern regex: %v\n", err)
 	}
 
 	var ignoreRegex *regexp.Regexp
 	if ignorePattern != "" {
 		ignoreRegex, err = regexp.Compile(ignorePattern)
 		if err != nil {
-			fmt.Printf("Error compiling ignore pattern regex: %v\n", err)
-			os.Exit(1)
+			log.Fatalf("Error compiling ignore pattern regex: %v\n", err)
 		}
 	}
 
 	ignoresMap, err := findFiles(ignores, fileRegex, ignoreRegex, nil)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatalf("Cannot find files to ignore: %v\n", err)
 	}
 	filesToWork, err := findFiles(files, fileRegex, ignoreRegex, ignoresMap)
 	if err != nil {
-		fmt.Println("Error:", err)
-		os.Exit(1)
+		log.Fatalf("Cannot find files to process: %v\n", err)
 	}
 
 	fmt.Printf("Files analyzed: %d\n-----------------\n", len(filesToWork))
@@ -101,97 +103,56 @@ func main() {
 	}
 	sort.Strings(allFiles)
 
-	codeExit := 0
+	processingOpts := fileProcessingOptions{
+		viewMode:  viewMode,
+		fixMode:   fixMode,
+		debugMode: debugMode,
+	}
+
+	var filesToFix []string
 	for _, filePath := range allFiles {
-		// read files
-		openFile, err := os.ReadFile(filePath)
+		needFix, err := processFile(filePath, processingOpts)
 		if err != nil {
-			log.Fatalln(err)
+			log.Fatalf("Cannot process file '%s': %v\n", filePath, err)
 		}
-		structures, mapStructures, err := Parse(openFile)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		calculateStructures(structures, true)
-
-		oldStructures := make([]*Structure, 0, len(structures))
-		for _, structure := range structures {
-			copied := deepCopy(structure)
-			oldStructures = append(oldStructures, copied)
-		}
-		oldStructuresMapper := createMapper(oldStructures)
-
-		optimizeMapperStructures(mapStructures)
-		calculateStructures(structures, false)
-		needFix := false
-		for _, structure := range structures {
-			if structure.MetaData.BeforeSize > structure.MetaData.AfterSize {
-				codeExit += 1
-				needFix = true
-				break
-			}
-		}
-		if viewMode || needFix {
-			fmt.Printf("%s\n", filePath)
-		}
-		for idx, structure := range structures {
-			if structure.MetaData.BeforeSize > structure.MetaData.AfterSize {
-				alert := fmt.Sprintf("can free %d bytes", structure.MetaData.BeforeSize-structure.MetaData.AfterSize)
-				if fixMode {
-					alert = "Fixed"
-				}
-				fmt.Printf("%s%-15s %d(b) -> %d(b) %s!\n", strings.Repeat(" ", 3),
-					structure.Name,
-					structure.MetaData.BeforeSize,
-					structure.MetaData.AfterSize,
-					alert)
-				if debugMode {
-					oldStructure, ok := oldStructuresMapper[structure.Path]
-					if ok {
-						fmt.Printf("%s%-20s\n", strings.Repeat(" ", 9), "------------------------------------------ [BEFORE]")
-						testPrintStructure(oldStructure, 9)
-						fmt.Printf("%s%-20s\n", strings.Repeat(" ", 9), "------------------------------------------ [AFTER]")
-						testPrintStructure(structure, 9)
-					}
-				}
-				if idx != len(structures)-1 && debugMode {
-					fmt.Println()
-				}
-			} else {
-				if viewMode {
-					fmt.Printf("%s%-15s ✓\n", strings.Repeat(" ", 3), structure.Name)
-				}
-			}
-		}
-		if viewMode && len(structures) > 0 {
-			fmt.Println()
-		}
-
-		// FIX
-		if !fixMode {
-			continue
-		}
-		err = renderTextStructures(structures)
-		if err != nil {
-			log.Fatal(err)
-		}
-		// Replace content
-		resultFile, err := Replacer(openFile, structures)
-		if err != nil {
-			log.Fatal(err)
-		}
-		err = os.WriteFile(filePath, resultFile, 0644)
-		if err != nil {
-			log.Fatal(err)
+		if needFix {
+			filesToFix = append(filesToFix, filePath)
 		}
 	}
-	if codeExit > 0 {
-		if !fixMode {
-			fmt.Printf("-----------------\nFound files: %d. That need to be optimized.\n", codeExit)
-			os.Exit(1)
-		} else {
-			fmt.Printf("-----------------\nApplying fixes to files: %d\n", codeExit)
-		}
-		fmt.Println()
+	if len(filesToFix) == 0 {
+		return
 	}
+
+	if fixMode {
+		fmt.Printf("-----------------\nApplied fixes to %d files\n", len(filesToFix))
+	} else {
+		fmt.Printf("-----------------\nFound files that need to be optimized:\n-- %s\n", strings.Join(filesToFix, "\n-- "))
+		os.Exit(1)
+	}
+	fmt.Println()
+}
+
+// printUsage prints the usage information for the program.
+func printUsage() {
+	fmt.Println("Usage of gofield:")
+	fmt.Println("  gofield --files <files> [options]")
+	fmt.Println("\nOptions:")
+	fmt.Println("  --files, -f            Comma-separated list of files or folders to process (required)")
+	fmt.Println("  --ignore, -i          Comma-separated list of files or folders to ignore")
+	fmt.Println("  --view, -v            Print the absolute paths of found files")
+	fmt.Println("  --fix                 Make changes to the files")
+	fmt.Println("  --pattern   		  Regex pattern for files to process (default: \\.go$)")
+	fmt.Println("  --ignore-pattern	  Regex pattern for files to ignore")
+	fmt.Println("  --version             Print the version of the program")
+	fmt.Println("  --help                Print this help message")
+	fmt.Println("\nExamples:")
+	fmt.Println("  gofield --files folder1,folder2 --ignore folder/ignore")
+	fmt.Println("  gofield -f \"folder1, folder2/\" -i \"folder/ignore, folder2/ignore\"")
+	fmt.Println("  gofield --files folder1 --pattern \"\\.(go|txt)$\" --view")
+	fmt.Println("  gofield --files \"example, example, example/ignore\" --pattern \"(_test\\.go$|^filename_)\" --ignore-pattern \"_ignore\\.go$\" --view")
+	fmt.Println("  gofield --files \"example, example/userx_test.go\" --ignore-pattern \"_test\\.go|ignore\\.go$\" -v")
+	fmt.Println("  gofield --files \"example\"")
+	fmt.Println("  gofield --files \"example\" --ignore-pattern \"_test\\.go$\"")
+	fmt.Println("  gofield --files \"example\" --pattern \"_test\\.go$\"")
+	fmt.Println("  gofield --files example --fix")
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"go/ast"
-	"go/format"
 	"sort"
 	"strings"
 	"unicode"
@@ -30,15 +29,6 @@ var stdTypes = map[string]bool{
 	"float64":    true,
 	"complex64":  true,
 	"complex128": true,
-}
-
-// formatGoCode formats the given Go code string
-func formatGoCode(code string) (string, error) {
-	formatted, err := format.Source([]byte(code))
-	if err != nil {
-		return "", err
-	}
-	return string(formatted), nil
 }
 
 // getTypeString returns a string representation of an AST expression

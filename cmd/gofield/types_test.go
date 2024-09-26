@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"go/format"
 	"reflect"
 	"strings"
 	"testing"
@@ -63,17 +64,15 @@ type TestStruct struct {
 	if err != nil {
 		t.Fatalf("ParseStrings failed: %v", err)
 	}
-	calculateStructures(results, true)
-	optimizeMapperStructures(mapperData)
-	calculateStructures(results, false)
-	err = renderTextStructures(results)
-	if err != nil {
-		t.Fatalf("Parse failed: %v", err)
-	}
 
 	if len(results) != 1 {
 		t.Fatalf("Expected 1 result, got %d", len(results))
 	}
+
+	calculateStructures(results, true)
+	optimizeMapperStructures(mapperData)
+	calculateStructures(results, false)
+	renderTextStructures(results)
 
 	if results[0].Name != "TestStruct" {
 		t.Errorf("Expected struct name 'TestStruct', got '%s'", results[0].Name)
@@ -84,8 +83,17 @@ type TestStruct struct {
 		t.Errorf("Expected non-zero sizes, got before: %d, after: %d", results[0].MetaData.BeforeSize, results[0].MetaData.AfterSize)
 	}
 
+	replaced, err := Replacer([]byte(input), results)
+	if err != nil {
+		t.Errorf("Cannot replace structs code: %v\n", err)
+	}
+	formatted, err := format.Source(replaced)
+	if err != nil {
+		t.Errorf("Cannot format generated data: %v\n", err)
+	}
+
 	// Check that the field order has changed (optimization)
-	optimizedStructString := string(results[0].MetaData.Data)
+	optimizedStructString := string(formatted)
 	if !strings.Contains(optimizedStructString, "b int64\n\ta bool\n\tc bool") {
 		t.Errorf("Expected fields to be reordered, got: %s", optimizedStructString)
 	}
@@ -136,15 +144,16 @@ type TestStruct struct {
 	calculateStructures(results, true)
 	optimizeMapperStructures(mapperData)
 	calculateStructures(results, false)
-	err = renderTextStructures(results)
-	if err != nil {
-		t.Fatalf("Parse failed: %v", err)
-	}
+	renderTextStructures(results)
 
-	_, err = Replacer(original, results)
 	modified, err := Replacer(original, results)
 	if err != nil {
 		t.Fatalf("Replacer failed: %v", err)
+	}
+
+	modified, err = format.Source(modified)
+	if err != nil {
+		t.Fatalf("Formatting failed: %v", err)
 	}
 
 	if bytes.Equal(original, modified) {
