@@ -23,6 +23,8 @@ func TestStructAlignment(t *testing.T) {
 		t.Fatal(err)
 	}
 	outFIle, err := os.ReadFile(testOutFile)
+	// Normalize line endings to LF
+	outFIle = normalizeLineEndings(outFIle)
 	if err != nil {
 		t.Fatal(err)
 	}

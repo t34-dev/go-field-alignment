@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"go/format"
 	"os"
@@ -175,4 +176,9 @@ func processFile(path string, opts fileProcessingOptions) (needFix bool, err err
 		return needFix, fmt.Errorf("cannot write results to file: %w", err)
 	}
 	return needFix, nil
+}
+
+// normalizeLineEndings converts all line endings to LF
+func normalizeLineEndings(data []byte) []byte {
+	return bytes.ReplaceAll(data, []byte("\r\n"), []byte("\n"))
 }

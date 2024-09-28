@@ -52,6 +52,9 @@ func ParseStrings(str string) ([]*Structure, map[string]*Structure, error) {
 
 // parseData is the core function that handles parsing and optimization of Go code
 func parseData(path string, bytes []byte) ([]*Structure, map[string]*Structure, error) {
+	// Normalize line endings to LF
+	bytes = normalizeLineEndings(bytes)
+
 	node, err := parser.ParseFile(token.NewFileSet(), path, bytes, parser.ParseComments)
 	if err != nil {
 		return nil, nil, errors.New(fmt.Sprintf("Failed to parseData source: %v", err))
@@ -110,6 +113,9 @@ func createMapper(structures []*Structure) map[string]*Structure {
 
 // Replacer replaces the original struct definitions with optimized versions in the source code
 func Replacer(file []byte, structures []*Structure) ([]byte, error) {
+	// Normalize line endings to LF
+	file = normalizeLineEndings(file)
+
 	var blocks []textreplacer.Block
 	for _, elem := range structures {
 		blocks = append(blocks, textreplacer.Block{
