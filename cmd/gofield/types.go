@@ -85,7 +85,7 @@ func parseData(path string, bytes []byte) ([]*Structure, map[string]*Structure, 
 			StartPos: startPos,
 			EndPos:   endPos,
 		}
-		item := createItemInfo(typeSpec, nil, mapperItems)
+		item := createTypeItemInfo(typeSpec, nil, mapperItems)
 		item.MetaData = &metaData
 		if item != nil {
 			structures = append(structures, item)
@@ -94,6 +94,7 @@ func parseData(path string, bytes []byte) ([]*Structure, map[string]*Structure, 
 	})
 	return structures, mapperItems, err
 }
+
 func createMapperItem(structure *Structure, mapperItems map[string]*Structure) map[string]*Structure {
 	mapperItems[structure.Path] = structure
 	if structure.IsStructure {
@@ -103,6 +104,7 @@ func createMapperItem(structure *Structure, mapperItems map[string]*Structure) m
 	}
 	return mapperItems
 }
+
 func createMapper(structures []*Structure) map[string]*Structure {
 	mapper := map[string]*Structure{}
 	for _, structure := range structures {

@@ -8,12 +8,26 @@ import (
 type Problem1 struct{}
 type Problem2 struct{}
 type Problem3 struct {
-	hello string
+	hello  string
+	hello2 string
 	time.Time
 	time.Duration
 	time.Location
 	typer bool
 }
+
+type (
+	S1 struct {
+		F2 string
+		F1 bool
+	}
+
+	S2 struct {
+		F3 string
+		F1 bool
+		F2 bool
+	}
+)
 
 type STR string
 type STRs []string

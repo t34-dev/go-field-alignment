@@ -9,12 +9,24 @@ type Problem1 struct{}
 type Problem2 struct {
 }
 type Problem3 struct {
-	hello string
-	typer bool
+	hello, hello2 string
+	typer         bool
 	time.Time
 	time.Duration
 	time.Location
 }
+
+type (
+	S1 struct {
+		F1 bool
+		F2 string
+	}
+
+	S2 struct {
+		F1, F2 bool
+		F3     string
+	}
+)
 
 type STR string
 type STRs []string
