@@ -87,7 +87,7 @@ gofield [options] <file or directory paths>
    gofield --files main.go,utils.go --fix
    ```
 
-3. Process files matching a custom pattern:
+3. Process files matching a custom pattern (default: `\.go$`):
    ```
    gofield --files src --pattern "\\.(go|proto)$"
    ```
