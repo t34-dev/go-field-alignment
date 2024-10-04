@@ -58,9 +58,9 @@ func getTypeString(expr ast.Expr) string {
 	case *ast.ChanType:
 		return getChanTypeString(t)
 	case *ast.StructType:
-		return "struct{...}"
+		return "struct{}"
 	case *ast.InterfaceType:
-		return "interface{...}"
+		return "interface{}"
 	case *ast.Ellipsis:
 		return "..." + getTypeString(t.Elt)
 	case *ast.ParenExpr:
