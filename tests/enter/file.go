@@ -36,6 +36,8 @@ type MyTest struct {
 	a        bool // 1 byte
 	nameX    string
 	Problem1 struct {
+		I interface{}
+		S struct{}
 	}
 	b   bool // 1 byte
 	App struct {
