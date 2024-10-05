@@ -35,7 +35,7 @@ To install `gofield`, make sure you have Go installed on your system, then run:
 
 ```shell
 # get all versions
-go list -m -versions github.com/t34-dev/go-field-alignment
+go list -m -versions github.com/t34-dev/go-field-alignment/v2
 
 # get package
 go get -u github.com/t34-dev/go-field-alignment/v2@latest
