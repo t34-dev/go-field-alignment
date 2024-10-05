@@ -42,9 +42,12 @@ type MyTest struct {
 		IsProduction              bool          `yaml:"is_production" env:"IS_PRODUCTION" yaml-default:"true"`
 	} `yaml:"app"`
 	nameX    string
-	a        bool // 1 byte
-	b        bool // 1 byte
-	Problem1 struct{}
+	Problem1 struct {
+		I interface{}
+		S struct{}
+	}
+	a bool // 1 byte
+	b bool // 1 byte
 } /* some text
 dsdsd
 dsds
