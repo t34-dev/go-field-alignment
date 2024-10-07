@@ -16,6 +16,10 @@ type Problem3 struct {
 	typer bool
 }
 
+type StructWithGenerics[T any] struct {
+	F T
+}
+
 type (
 	S1 struct {
 		F2 string
@@ -24,6 +28,7 @@ type (
 
 	S2 struct {
 		F3 string
+		F4 StructWithGenerics[int]
 		F1 bool
 		F2 bool
 	}

@@ -16,6 +16,10 @@ type Problem3 struct {
 	time.Location
 }
 
+type StructWithGenerics[T any] struct {
+	F T
+}
+
 type (
 	S1 struct {
 		F1 bool
@@ -25,6 +29,7 @@ type (
 	S2 struct {
 		F1, F2 bool
 		F3     string
+		F4     StructWithGenerics[int]
 	}
 )
 

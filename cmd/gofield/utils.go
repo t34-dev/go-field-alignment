@@ -69,6 +69,9 @@ func getTypeString(expr ast.Expr) string {
 		return getTypeString(t.Type)
 	case *ast.FuncLit:
 		return getFuncTypeString(t.Type)
+	// Generics
+	case *ast.IndexExpr:
+		return fmt.Sprintf("%s[%s]", getTypeString(t.X), getTypeString(t.Index))
 	default:
 		return fmt.Sprintf("%T", expr)
 	}
