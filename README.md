@@ -1,10 +1,10 @@
 # Go-Field
 
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
-[![Coverage Status](https://coveralls.io/repos/github/t34-dev/go-field-alignment/badge.svg?branch=main&ver=1728116352)](https://coveralls.io/github/t34-dev/go-field-alignment?branch=main&ver=1728116352)
-![Go Version](https://img.shields.io/badge/Go-1.22-blue?logo=go&ver=1728116352)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/t34-dev/go-field-alignment?ver=1728116352)
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/t34-dev/go-field-alignment?sort=semver&style=flat&logo=git&logoColor=white&label=Latest%20Version&color=blue&ver=1728116352)
+[![Coverage Status](https://coveralls.io/repos/github/t34-dev/go-field-alignment/badge.svg?branch=main&ver=1728402353)](https://coveralls.io/github/t34-dev/go-field-alignment?branch=main&ver=1728402353)
+![Go Version](https://img.shields.io/badge/Go-1.22-blue?logo=go&ver=1728402353)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/t34-dev/go-field-alignment?ver=1728402353)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/t34-dev/go-field-alignment?sort=semver&style=flat&logo=git&logoColor=white&label=Latest%20Version&color=blue&ver=1728402353)
 
 Go-Field is a powerful tool designed for Golang developers to enhance code readability and optimize memory usage by performing multi-level field alignment in struct declarations while preserving original metadata.
 
