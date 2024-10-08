@@ -85,3 +85,81 @@ func Get() {
 
 	//name
 }
+
+// Unaligned Structures
+type SimpleGenericUnaligned[T any] struct {
+	Value T
+	ID    int
+	Name  string
+}
+
+type MultiParamUnaligned[T string, U Number] struct {
+	First   T
+	Second  U
+	IsValid bool
+}
+
+type OuterUnaligned[T any, U comparable] struct {
+	Data     T
+	Nested   Inner[U]
+	Priority int
+}
+
+type TreeNodeUnaligned[T any] struct {
+	Value  T
+	Left   *TreeNodeUnaligned[T]
+	Right  *TreeNodeUnaligned[T]
+	Depth  int
+	IsLeaf bool
+}
+
+type SliceContainerUnaligned[T any] struct {
+	Items      []T
+	TotalCount int
+	MaxSize    int64
+	IsReadOnly bool
+}
+
+// Aligned Structures
+type SimpleGenericAligned[T any] struct {
+	Value T
+	ID    int
+	Name  string
+}
+
+type MultiParamAligned[T any, U Number] struct {
+	First   T
+	Second  U
+	IsValid bool
+}
+
+type OuterAligned[T any, U comparable] struct {
+	Data     T
+	Nested   Inner[U]
+	Priority int
+}
+
+type TreeNodeAligned[T any] struct {
+	Value  T
+	Left   *TreeNodeAligned[T]
+	Right  *TreeNodeAligned[T]
+	Depth  int
+	IsLeaf bool
+}
+
+type SliceContainerAligned[T any] struct {
+	Items      []T
+	TotalCount int
+	MaxSize    int64
+	IsReadOnly bool
+}
+
+// Common types used in the structures above
+type Number interface {
+	int | int32 | int64 | float32 | float64
+}
+
+type Inner[T comparable] struct {
+	Key   T
+	Value string
+}

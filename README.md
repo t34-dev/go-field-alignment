@@ -16,6 +16,7 @@ Go-Field is a powerful tool designed for Golang developers to enhance code reada
 
 - Analyzes struct field alignment and padding in Go source files
 - Calculates the size and alignment of each struct and its fields
+- Generics support
 - single-pass iteration 
 - flexible configuration of files and directories for search 
 - flexible configuration of ignore files (full control)
