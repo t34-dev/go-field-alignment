@@ -16,6 +16,16 @@ type Problem3 struct {
 	time.Location
 }
 
+type StructWithGenerics[T any] struct {
+	F T
+}
+
+type StructWithMoreGenerics[T1, T2 any, T3 comparable] struct {
+	F1 T1
+	F2 T2
+	F3 T3
+}
+
 type (
 	S1 struct {
 		F1 bool
@@ -25,6 +35,8 @@ type (
 	S2 struct {
 		F1, F2 bool
 		F3     string
+		F4     StructWithGenerics[int]
+		F5     StructWithMoreGenerics[int, float64, string]
 	}
 )
 

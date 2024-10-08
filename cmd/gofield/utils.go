@@ -69,7 +69,20 @@ func getTypeString(expr ast.Expr) string {
 		return getTypeString(t.Type)
 	case *ast.FuncLit:
 		return getFuncTypeString(t.Type)
+	case *ast.IndexExpr:
+		// Single type argument
+		return fmt.Sprintf("%s[%s]", getTypeString(t.X), getTypeString(t.Index))
+	case *ast.IndexListExpr:
+		// Multiple type arguments
+		idxTypes := make([]string, len(t.Indices))
+		for i, idx := range t.Indices {
+			idxTypes[i] = getTypeString(idx)
+		}
+		return fmt.Sprintf("%s[%s]", getTypeString(t.X), strings.Join(idxTypes, ", "))
 	default:
+		// TODO: maybe, it's better to fail here?
+		//
+		// It'll be easier to add support of what we've missed.
 		return fmt.Sprintf("%T", expr)
 	}
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"go/ast"
 	"strings"
 )
 
@@ -25,68 +26,93 @@ import (
 // Returns:
 // - A string containing the rendered structure
 func renderStructure(elem *Structure) string {
-	data := ""
-
 	isValidCustomNameType := isValidCustomTypeName(elem.StringType)
 	if !elem.IsStructure || isValidCustomNameType {
 		return elem.StringType
 	}
 
+	var data strings.Builder
 	if elem.Root != nil {
+		data.WriteString(elem.Name)
+
+		// Render generic type params
+		if typeParams := elem.Root.TypeParams; typeParams != nil && len(typeParams.List) > 0 {
+			params := typeParams.List
+			data.WriteRune('[')
+			data.WriteString(renderTypeParameter(params[0]))
+			for _, p := range params[1:] {
+				data.WriteString(", ")
+				data.WriteString(renderTypeParameter(p))
+			}
+			data.WriteRune(']')
+		}
+
 		// Don't add "type " here, as current structure may be inside a "type" block
-		data += fmt.Sprintf("%s struct{", elem.Name)
+		data.WriteString(" struct {")
 	} else {
-		data += fmt.Sprintf("struct {")
+		// Anonymous structs don't support type params
+		data.WriteString("struct {")
 	}
 	if len(elem.NestedFields) > 0 {
-		data += fmt.Sprintf("\n")
+		data.WriteRune('\n')
 	}
 
 	for idx, field := range elem.NestedFields {
 		// Doc
 		if field.RootField != nil && field.RootField.Doc != nil && len(field.RootField.Doc.List) > 0 {
 			for _, comment := range field.RootField.Doc.List {
-				data += fmt.Sprintln(comment.Text)
+				data.WriteString(comment.Text)
+				data.WriteRune('\n')
 			}
 		}
 		if strings.HasPrefix(field.Name, "!") {
 			field.Name = ""
 		}
-		data += fmt.Sprintf("%s %s ", field.Name, renderStructure(field))
+		data.WriteString(fmt.Sprintf("%s %s ", field.Name, renderStructure(field)))
 		// Tag
 		if field.RootField != nil {
 			// Tags
 			if field.RootField.Tag != nil && len(field.RootField.Tag.Value) > 0 {
-				data += fmt.Sprintf(" %s", field.RootField.Tag.Value)
+				data.WriteString(fmt.Sprintf(" %s", field.RootField.Tag.Value))
 			}
 			// Comment
 			if field.RootField.Comment != nil && len(field.RootField.Comment.List) > 0 {
 				for _, comment := range field.RootField.Comment.List {
-					data += fmt.Sprintf(" %s", comment.Text)
+					data.WriteString(fmt.Sprintf(" %s", comment.Text))
 				}
 			}
 		}
 		if idx != len(elem.NestedFields) {
-			data += fmt.Sprintf("\n")
+			data.WriteRune('\n')
 		}
 	}
 
-	data += fmt.Sprintf("}")
+	data.WriteRune('}')
+
 	// Comments
 	if elem.RootField != nil {
 		if elem.RootField.Comment != nil && len(elem.RootField.Comment.List) > 0 {
 			for _, comment := range elem.RootField.Comment.List {
-				data += fmt.Sprintf("%s", comment.Text)
+				data.WriteString(comment.Text)
 			}
 		}
 	} else if elem.Root != nil {
 		if elem.Root.Comment != nil && len(elem.Root.Comment.List) > 0 {
 			for _, comment := range elem.Root.Comment.List {
-				data += fmt.Sprintf("%s", comment.Text)
+				data.WriteString(comment.Text)
 			}
 		}
 	}
-	return data
+	return data.String()
+}
+
+// renderTypeParameter renders the given type parameter as Go code.
+func renderTypeParameter(f *ast.Field) string {
+	names := make([]string, len(f.Names))
+	for i := 0; i < len(names); i++ {
+		names[i] = f.Names[i].Name
+	}
+	return fmt.Sprintf("%s %s", strings.Join(names, ", "), getTypeString(f.Type))
 }
 
 func renderTextStructures(structures []*Structure) {

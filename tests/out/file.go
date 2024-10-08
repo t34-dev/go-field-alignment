@@ -16,6 +16,16 @@ type Problem3 struct {
 	typer bool
 }
 
+type StructWithGenerics[T any] struct {
+	F T
+}
+
+type StructWithMoreGenerics[T1, T2 any, T3 comparable] struct {
+	F1 T1
+	F2 T2
+	F3 T3
+}
+
 type (
 	S1 struct {
 		F2 string
@@ -24,6 +34,8 @@ type (
 
 	S2 struct {
 		F3 string
+		F4 StructWithGenerics[int]
+		F5 StructWithMoreGenerics[int, float64, string]
 		F1 bool
 		F2 bool
 	}
