@@ -84,11 +84,11 @@ type fileProcessingOptions struct {
 func processFile(path string, opts fileProcessingOptions) (needFix bool, err error) {
 	fileData, err := os.ReadFile(path)
 	if err != nil {
-		return false, fmt.Errorf("cannot read file: %w", err)
+		return false, fmt.Errorf("cannot read file %s: %w", path, err)
 	}
-	structures, mapStructures, err := Parse(fileData)
+	structures, mapStructures, err := ParseWithFilename(path, fileData)
 	if err != nil {
-		return false, fmt.Errorf("cannot parse file: %w", err)
+		return false, fmt.Errorf("cannot parse file %s: %w", path, err)
 	}
 
 	calculateStructures(structures, true)

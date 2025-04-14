@@ -45,6 +45,11 @@ func Parse(bytes []byte) ([]*Structure, map[string]*Structure, error) {
 	return parseData("", bytes)
 }
 
+// ParseWithFilename parses Go code from a byte slice with a filename and returns optimization results
+func ParseWithFilename(filename string, bytes []byte) ([]*Structure, map[string]*Structure, error) {
+	return parseData(filename, bytes)
+}
+
 // ParseStrings parses Go code from a string and returns optimization results
 func ParseStrings(str string) ([]*Structure, map[string]*Structure, error) {
 	return parseData("", []byte(str))
@@ -57,7 +62,10 @@ func parseData(path string, bytes []byte) ([]*Structure, map[string]*Structure, 
 
 	node, err := parser.ParseFile(token.NewFileSet(), path, bytes, parser.ParseComments)
 	if err != nil {
-		return nil, nil, errors.New(fmt.Sprintf("Failed to parseData source: %v", err))
+		if path == "" {
+			return nil, nil, errors.New(fmt.Sprintf("Failed to parseData source: %v", err))
+		}
+		return nil, nil, errors.New(fmt.Sprintf("Failed to parseData source %s: %v", path, err))
 	}
 
 	//var results []MetaData

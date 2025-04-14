@@ -120,6 +120,7 @@ func main() {
 		}
 	}
 	if len(filesToFix) == 0 {
+		fmt.Printf("-----------------\nAll files are already optimized. No changes needed.\n")
 		return
 	}
 
